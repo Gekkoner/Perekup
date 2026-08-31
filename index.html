@@ -1762,6 +1762,28 @@
   .a8-btn:disabled { opacity:0.4; cursor:not-allowed; }
   .a8-btn-row { display:flex; gap:10px; margin-top:10px; }
 
+  /* ==================== ПОЧТА: тарифы, посылки, трек ==================== */
+  .mail-tabs { display:flex; gap:8px; margin:0 0 14px 0; }
+  .mail-tab { flex:1; text-align:center; padding:9px 0; border-radius:10px; background:#2c2c2e; color:rgba(255,255,255,0.6); font-size:13px; font-weight:700; cursor:pointer; }
+  .mail-tab.active { background:#3fa8ff; color:#fff; }
+  .mail-tab-panel { display:none; }
+  .mail-tab-panel.active { display:block; }
+  .post-track-row { display:flex; gap:8px; margin-bottom:6px; }
+  .post-track-input { flex:1; background:#2c2c2e; border:none; border-radius:12px; padding:11px 14px; color:#fff; font-size:14px; }
+  .post-track-input::placeholder { color:#7a7a80; }
+  .post-track-btn { background:#3fa8ff; color:#fff; border:none; border-radius:12px; padding:0 18px; font-size:13.5px; font-weight:700; cursor:pointer; }
+  .post-parcel-item { cursor:default; }
+  .post-tariff-card { display:flex; align-items:center; gap:12px; background:#161616; border-radius:14px; padding:12px 14px; margin-bottom:10px; cursor:pointer; }
+  .post-tariff-card:active { transform:scale(0.98); }
+  .post-tariff-icon { font-size:24px; flex-shrink:0; width:34px; text-align:center; }
+  .post-tariff-info { flex:1; min-width:0; }
+  .post-tariff-label { font-size:14px; font-weight:700; color:#fff; }
+  .post-tariff-desc { font-size:12px; color:#9a9aa2; margin-top:2px; }
+  .post-tariff-price { text-align:right; flex-shrink:0; }
+  .post-tariff-cost { font-size:14.5px; font-weight:800; color:#7be08f; }
+  .post-tariff-days { font-size:11.5px; color:#ffcf6e; }
+  .post-tariff-note { font-size:12px; color:#ffcf6e; background:rgba(255,207,110,0.1); border-radius:10px; padding:8px 10px; margin-bottom:10px; }
+
   /* -- Seller mini modal -- */
   .a8-seller-modal-card { text-align:center; }
 
@@ -1777,6 +1799,30 @@
     transition: transform 0.28s cubic-bezier(.2,.8,.3,1);
   }
   .a8-chat-overlay.open { transform:translateX(0); }
+  .a8-post-compose-overlay {
+    position:absolute; inset:0; z-index:49;
+    background:#050505; display:flex; flex-direction:column;
+    transform:translateX(100%);
+    transition: transform 0.28s cubic-bezier(.2,.8,.3,1);
+  }
+  .a8-post-compose-overlay.open { transform:translateX(0); }
+  .a8-chat-delivery-btn { flex-shrink:0; padding:10px 14px 0 14px; }
+  .a8-chat-delivery-cta {
+    width:100%; background:linear-gradient(135deg,#3fa8ff,#2f7fe0); color:#fff;
+    border:none; border-radius:14px; padding:13px 14px; font-size:14px; font-weight:700; cursor:pointer;
+  }
+  .a8-chat-delivery-cta:active { transform:scale(0.98); }
+  .post-compose-summary { background:#161616; border-radius:14px; padding:12px 14px; margin-bottom:6px; }
+  .post-compose-row { display:flex; justify-content:space-between; gap:10px; padding:5px 0; font-size:13px; color:#c8c8ce; }
+  .post-compose-row b { color:#fff; text-align:right; }
+  .post-compose-loading { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:60px 20px; color:#c8c8ce; font-size:14px; }
+  .post-compose-spinner { width:34px; height:34px; border-radius:50%; border:3px solid rgba(255,255,255,0.15); border-top-color:#3fa8ff; animation: a8SpinRotate 0.8s linear infinite; }
+  @keyframes a8SpinRotate { to { transform:rotate(360deg); } }
+  .post-compose-success { display:flex; flex-direction:column; align-items:center; text-align:center; padding:40px 10px 10px; }
+  .post-compose-check { font-size:40px; margin-bottom:10px; }
+  .post-compose-success-title { font-size:16px; font-weight:700; color:#fff; margin-bottom:16px; }
+  .post-compose-track-row { display:flex; align-items:center; gap:10px; background:#161616; border-radius:12px; padding:10px 14px; font-size:13.5px; color:#c8c8ce; }
+  .post-compose-track-row b { color:#7be08f; }
   .a8-chat-header {
     display:flex;
     align-items:center;
@@ -2011,6 +2057,16 @@
     font-weight:700;
     outline:none;
     margin-bottom:6px;
+  }
+
+  .a8-swipe-row { position:relative; overflow:hidden; }
+  .a8-swipe-content { position:relative; background:#0d0d0d; transition: transform 0.2s ease; touch-action: pan-y; }
+  .a8-swipe-content.dragging { transition:none; }
+  .a8-swipe-delete {
+    position:absolute; top:0; right:0; bottom:0; width:76px;
+    background:#e5484d; color:#fff; border:none;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:700; cursor:pointer;
   }
 
   /* -- Mine badge / profile list cards -- */
@@ -2307,8 +2363,6 @@
               <div class="a8-balance-pill" style="margin-top:10px;" id="a8-profile-balance">💰 0 ₽</div>
             </div>
 
-            <div id="a8-transit-block"></div>
-
             <div class="a8-profile-tabs" id="a8-profile-tabs">
               <div class="a8-profile-tab active" data-ptab="active" onclick="a8ProfileTab(this,'active')">Активно</div>
               <div class="a8-profile-tab" data-ptab="sold" onclick="a8ProfileTab(this,'sold')">Архив</div>
@@ -2500,7 +2554,17 @@
             <input type="number" class="a8-chat-offer-input" id="a8-chat-offer-input" placeholder="Ваша цена, ₽">
             <button class="a8-chat-offer-send" onclick="a8SubmitOffer()">Отправить</button>
           </div>
+          <div class="a8-chat-delivery-btn" id="a8-chat-delivery-btn" style="display:none;"></div>
           <div class="a8-chat-quick" id="a8-chat-quick"></div>
+        </div>
+
+        <!-- POST COMPOSE OVERLAY (оформление доставки через Почту) -->
+        <div class="a8-post-compose-overlay" id="a8-post-compose-overlay">
+          <div class="a8-chat-header">
+            <div class="a8-chat-back" onclick="a8ClosePostCompose()">‹</div>
+            <div class="a8-chat-title"><div class="a8-chat-name">Почта</div></div>
+          </div>
+          <div id="a8-post-compose-body" style="padding:16px;overflow-y:auto;flex:1;"></div>
         </div>
 
         <!-- TOAST -->
@@ -2613,6 +2677,14 @@
         <div id="bp-action-body"></div>
       </div>
     </div>
+
+    <!-- ПОЧТА: ВЫБОР ТАРИФА ОТПРАВКИ -->
+    <div class="a8-sheet-modal" id="post-tariff-modal" onclick="if(event.target===this) a8ClosePostTariff()">
+      <div class="a8-filter-sheet" id="post-tariff-sheet">
+        <div class="a8-filter-handle"></div>
+        <div id="post-tariff-body"></div>
+      </div>
+    </div>
     <div class="overlay overlay-bank" id="overlay-bank">
       <div class="overlay-back" onclick="closeApp(event)">‹</div>
       <div class="ov-status"><span class="ov-time-value">17:00</span><div class="battery"><div class="battery-body"><div class="battery-fill"></div></div><div class="battery-tip"></div></div></div>
@@ -2690,6 +2762,12 @@
       <div class="ov-status"><span class="ov-time-value">17:00</span><div class="battery"><div class="battery-body"><div class="battery-fill"></div></div><div class="battery-tip"></div></div></div>
       <div class="mail-body">
         <div class="mail-title">Почта</div>
+        <div class="mail-tabs" id="mail-tabs">
+          <div class="mail-tab active" data-mailtab="letters" onclick="a8SetMailTab('letters')">Письма</div>
+          <div class="mail-tab" data-mailtab="parcels" onclick="a8SetMailTab('parcels')">Посылки</div>
+        </div>
+
+        <div class="mail-tab-panel active" data-mailtabpanel="letters">
         <div class="mail-list" id="mail-list">
 
           <div class="mail-item" data-mail="1" onclick="a8OpenMail(this)">
@@ -2725,6 +2803,19 @@
             <div class="mail-full">Оформите карту K Банка прямо в приложении банка на главном экране, чтобы получать кэшбэк с покупок и удобно отслеживать историю операций. Оформление занимает меньше минуты.</div>
           </div>
 
+        </div>
+        </div>
+
+        <div class="mail-tab-panel" data-mailtabpanel="parcels">
+          <div class="post-track-row">
+            <input type="text" id="post-track-input" class="post-track-input" placeholder="Введите трек-номер" />
+            <button class="post-track-btn" onclick="a8TrackLookup()">Найти</button>
+          </div>
+          <div id="post-track-result"></div>
+          <div class="a8-filter-label" style="margin:14px 0 8px;">Активные отправления</div>
+          <div class="mail-list" id="post-parcel-list"></div>
+          <div class="a8-filter-label" style="margin:18px 0 8px;">Архив</div>
+          <div class="mail-list" id="post-parcel-archive"></div>
         </div>
       </div>
     </div>
@@ -4569,11 +4660,31 @@ const A8_PRODUCT_IMAGES = {
     // If the name field's keyboard is still open, blurring it first can
     // eat the very same tap on some mobile browsers/webviews (the tap just
     // dismisses the keyboard instead of also opening the sheet below it).
-    // Deferring the actual open by a tick avoids that race.
+    // Deferring the actual open avoids that race — but a fixed 60ms guess
+    // isn't enough: the real on-screen-keyboard dismiss animation on phones
+    // often takes 250-300ms+, so the sheet was popping open while the
+    // keyboard still covered the city list/"Отмена" button underneath it,
+    // making taps land on the keyboard instead of a city. We now wait for
+    // the viewport to actually resize back (keyboard closed), with a
+    // generous timeout as a fallback for browsers without visualViewport
+    // or where the resize event doesn't fire.
     const wasFocused = document.activeElement === lockInput;
     lockInput.blur();
     const openModal = () => document.getElementById('lock-city-modal').classList.add('open');
-    if (wasFocused) { setTimeout(openModal, 60); } else { openModal(); }
+    if (!wasFocused) { openModal(); return; }
+    if (window.visualViewport) {
+      let opened = false;
+      const finish = () => {
+        if (opened) return;
+        opened = true;
+        window.visualViewport.removeEventListener('resize', finish);
+        openModal();
+      };
+      window.visualViewport.addEventListener('resize', finish);
+      setTimeout(finish, 350);
+    } else {
+      setTimeout(openModal, 350);
+    }
   }
   function lockCloseCityPicker() {
     document.getElementById('lock-city-modal').classList.remove('open');
@@ -4650,7 +4761,43 @@ const A8_PRODUCT_IMAGES = {
 
   const A8_CITIES = ['Москва','Санкт-Петербург','Новосибирск','Екатеринбург','Казань','Красноярск','Нижний Новгород','Челябинск','Уфа','Краснодар','Самара','Ростов-на-Дону','Омск','Воронеж','Пермь','Волгоград'];
   const A8_NAMES = ['Алексей','Дмитрий','Сергей','Иван','Максим','Артём','Никита','Кирилл','Роман','Егор','Павел','Владимир','Денис','Игорь','Олег','Андрей','Анна','Мария','Елена','Ольга','Татьяна','Наталья','Ирина','Светлана','Юлия','Ксения'];
+  /* Имена, согласованные с характером продавца (botType), чтобы "бабушка"
+     не оказывалась Денисом и наоборот. Используются вместо A8_NAMES при
+     генерации объявлений — A8_NAMES остаётся для мест без персонажа
+     (например, имя курьера). */
+  const A8_NAMES_BY_TYPE = {
+    granny: ['Людмила','Галина','Валентина','Евдокия','Тамара','Нина','Зинаида','Раиса'],
+    naive: ['Анна','Мария','Елена','Ольга','Татьяна','Наталья','Ирина','Светлана','Юлия','Ксения'],
+    shark: ['Алексей','Дмитрий','Сергей','Максим','Артём','Кирилл','Роман','Егор','Владимир','Игорь','Олег'],
+    chill: ['Иван','Никита','Павел','Денис','Андрей','Анна','Мария','Юлия','Ксения','Роман']
+  };
   const A8_DELIVERY = ['Доставка в любой город','Самовывоз'];
+
+  /* ---- Почта: тарифы отправки. У обычных вещей один набор тарифов,
+     у габаритных категорий (авто) — отдельный, более дорогой набор
+     («автовоз»). ---- */
+  const A8_POST_TARIFFS = {
+    standard: [
+      { id:'economy',  label:'Эконом',   icon:'🐢', desc:'Дольше в пути, зато дешевле', priceMult:0.7, daysMult:1.6 },
+      { id:'standard', label:'Стандарт', icon:'📦', desc:'Обычная скорость доставки',    priceMult:1.0, daysMult:1.0 },
+      { id:'express',  label:'Экспресс', icon:'⚡', desc:'Быстрее всего, но дороже',      priceMult:1.7, daysMult:0.55 }
+    ],
+    bulky: [
+      { id:'auto_eco',  label:'Автовоз (эконом)',   icon:'🚛', desc:'Медленный автовоз, дешевле обычного', priceMult:0.8, daysMult:1.4 },
+      { id:'auto_std',  label:'Автовоз (стандарт)', icon:'🚚', desc:'Обычная перевозка автомобиля',        priceMult:1.0, daysMult:1.0 },
+      { id:'auto_fast', label:'Автовоз (срочно)',   icon:'🚀', desc:'Ускоренная перевозка, дорого',        priceMult:2.1, daysMult:0.5 }
+    ]
+  };
+  function a8TariffSetFor(l) {
+    return l.cat === 'auto' ? A8_POST_TARIFFS.bulky : A8_POST_TARIFFS.standard;
+  }
+  function a8GenerateTrackCode() {
+    const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    let s = 'A8';
+    for (let i = 0; i < 2; i++) s += letters[a8RandInt(0, letters.length - 1)];
+    s += a8RandInt(100000, 999999);
+    return s;
+  }
 
   /* -- City geography (approx real coords) for distance-based travel/delivery costs -- */
   const A8_CITY_COORDS = {
@@ -4675,17 +4822,72 @@ const A8_PRODUCT_IMAGES = {
     const cap = Math.max(20, Math.round(price * 0.25 / 10) * 10);
     return Math.max(20, Math.min(cost, cap));
   }
-  function a8DeliveryInfo(distKm, price) {
+  function a8DeliveryInfo(distKm, price, cat) {
     price = price || 0;
-    let cost;
-    if (distKm < 5) cost = 60;
-    else cost = Math.round((60 + distKm * 0.9) / 10) * 10;
-    // Delivery should never dwarf the price of a cheap item: cap it at roughly
-    // a third of the item's price (with a small floor so it's never free).
-    const cap = Math.max(30, Math.round(price * 0.35 / 10) * 10);
-    cost = Math.max(30, Math.min(cost, cap));
+    if (cat === 'auto') {
+      // Автовоз — отдельные, ощутимо более высокие тарифы перевозки машин.
+      let cost = distKm < 5 ? 60 : Math.round((60 + distKm * 0.9) / 10) * 10;
+      const cap = Math.max(30, Math.round(price * 0.35 / 10) * 10);
+      cost = Math.max(30, Math.min(cost, cap));
+      const days = Math.min(7, Math.max(1, Math.round(distKm / 700) + 1));
+      return { cost, days };
+    }
+    // Обычные вещи — доставка теперь заметно дешевле.
+    let cost = distKm < 5 ? 15 : Math.round((15 + distKm * 0.25) / 10) * 10;
+    const cap = Math.max(10, Math.round(price * 0.12 / 10) * 10);
+    cost = Math.max(10, Math.min(cost, cap));
     const days = Math.min(7, Math.max(1, Math.round(distKm / 700) + 1));
     return { cost, days };
+  }
+
+  /* -- Address database: real-flavored street lists per city, so the
+     delivery/pickup branch in chat can show a believable "Мой адрес: ...".
+     Each city gets its own street set (Москва / Екатеринбург etc. all have
+     their own lists), with a generic fallback for any city not listed. -- */
+  const A8_CITY_STREETS = {
+    'Москва': ['ул. Тверская', 'Ленинский проспект', 'ул. Арбат', 'Кутузовский проспект', 'ул. Профсоюзная', 'Каширское шоссе', 'ул. Народного Ополчения', 'Ярославское шоссе'],
+    'Санкт-Петербург': ['Невский проспект', 'ул. Рубинштейна', 'Московский проспект', 'ул. Марата', 'Приморский проспект', 'Лиговский проспект', 'ул. Восстания', 'Гражданский проспект'],
+    'Новосибирск': ['Красный проспект', 'ул. Ленина', 'ул. Кирова', 'Большевистская ул.', 'ул. Немировича-Данченко', 'Гусинобродское шоссе', 'ул. Станционная'],
+    'Екатеринбург': ['ул. Малышева', 'проспект Ленина', 'ул. Вайнера', 'ул. Куйбышева', 'ул. Ясная', 'Сибирский тракт', 'ул. Родонитовая', 'ул. Щербакова'],
+    'Казань': ['ул. Баумана', 'проспект Победы', 'ул. Пушкина', 'ул. Меридианная', 'Оренбургский тракт', 'ул. Декабристов', 'ул. Ямашева'],
+    'Красноярск': ['проспект Мира', 'ул. Партизана Железняка', 'ул. Взлётная', 'ул. Копылова', 'Октябрьский проспект', 'ул. Шумяцкого'],
+    'Нижний Новгород': ['ул. Большая Покровская', 'проспект Гагарина', 'ул. Родионова', 'Московское шоссе', 'ул. Белинского', 'Казанское шоссе'],
+    'Челябинск': ['проспект Ленина', 'ул. Кирова', 'ул. Труда', 'Свердловский проспект', 'ул. Молодогвардейцев', 'ул. Островского'],
+    'Уфа': ['проспект Октября', 'ул. Ленина', 'ул. Менделеева', 'ул. Российская', 'проспект Салавата Юлаева', 'ул. Комсомольская'],
+    'Краснодар': ['ул. Красная', 'ул. Стасова', 'Кубанская наб.', 'ул. Северная', 'ул. Московская', 'Ростовское шоссе'],
+    'Самара': ['ул. Ново-Садовая', 'Московское шоссе', 'ул. Ленинградская', 'ул. Дыбенко', 'проспект Кирова', 'ул. Гагарина'],
+    'Ростов-на-Дону': ['Ворошиловский проспект', 'Большая Садовая ул.', 'проспект Стачки', 'ул. Малиновского', 'Театральная площадь'],
+    'Омск': ['ул. Ленина', 'проспект Мира', 'ул. Красный Путь', 'ул. Масленникова', 'ул. 70 лет Октября'],
+    'Воронеж': ['проспект Революции', 'Московский проспект', 'ул. Кольцовская', 'Ленинский проспект', 'ул. Плехановская'],
+    'Пермь': ['Комсомольский проспект', 'ул. Ленина', 'ул. Куйбышева', 'шоссе Космонавтов', 'ул. Мира'],
+    'Волгоград': ['проспект Ленина', 'ул. Мира', 'Аллея Героев', 'ул. Циолковского', 'Историческая ул.']
+  };
+  const A8_STREET_FALLBACK = ['ул. Ленина', 'ул. Мира', 'ул. Советская', 'ул. Центральная', 'проспект Победы'];
+  function a8Hash(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+    return Math.abs(h);
+  }
+  /* Deterministic per-listing address: the same listing always shows the
+     same street/house/flat, but different listings in the same city get
+     different ones (derived from the listing id, not from Math.random()
+     — so re-rendering a chat never changes a seller's address). */
+  function a8AddressFor(city, seed) {
+    const streets = A8_CITY_STREETS[city] || A8_STREET_FALLBACK;
+    const h = a8Hash(String(seed) + '|' + city);
+    const street = streets[h % streets.length];
+    const house = 3 + (h % 97);
+    const flat = 5 + (Math.floor(h / 97) % 180);
+    return street + ', д. ' + house + ', кв. ' + flat;
+  }
+  /* Short form for real-estate listings — a property is itself "at" an
+     address, an apartment-number-of-the-visitor doesn't make sense there. */
+  function a8PropertyAddressFor(city, seed) {
+    const streets = A8_CITY_STREETS[city] || A8_STREET_FALLBACK;
+    const h = a8Hash(String(seed) + '|prop|' + city);
+    const street = streets[h % streets.length];
+    const house = 2 + (h % 60);
+    return street + ', д. ' + house;
   }
 
   /* -- Condition / wear system: affects price and resale liquidity.
@@ -4892,6 +5094,20 @@ const A8_PRODUCT_IMAGES = {
   const A8_BOT_TYPES = ['shark','naive','chill','granny'];
   const A8_BOT_FACTOR = { shark:0.90, naive:0.55, chill:0.75, granny:0.45 };
   const A8_BOT_LABEL = { shark:'въедливый и держит цену', naive:'не разбирается в товаре', chill:'спокойный, любит пошутить', granny:'божий одуванчик, торгуется от души' };
+  /* Подбирает характер продавца под категорию товара: "бабушка" — только
+     у розничных продавцов простых вещей и с небольшим шансом, у авто и
+     недвижимости этот характер не встречается вовсе. */
+  function a8PickBotType(cat) {
+    const isExpensive = cat === 'auto' || cat === 'realty';
+    const r = Math.random();
+    if (isExpensive) {
+      return r < 0.34 ? 'shark' : r < 0.67 ? 'naive' : 'chill';
+    }
+    if (r < 0.12) return 'granny';
+    if (r < 0.42) return 'shark';
+    if (r < 0.72) return 'naive';
+    return 'chill';
+  }
 
   /* -- Category icon system (replaces emoji) -- */
   const A8_TEMP_IMAGES = {
@@ -5117,6 +5333,9 @@ const A8_PRODUCT_IMAGES = {
       const discountPct = hasDiscount ? a8RandInt(10, 35) : 0;
       const oldPrice = hasDiscount ? Math.round(price / (1 - discountPct / 100) / 10) * 10 : null;
       const defects = a8PickDefects(cat, condition.key);
+      // Характер выбирается раньше имени, чтобы имя всегда соответствовало
+      // персонажу (например, "бабушка" не окажется Денисом).
+      const botType = a8PickBotType(cat);
 
       list.push({
         id, cat, tplName: product.display_name, emoji: priceTpl.emoji,
@@ -5128,11 +5347,12 @@ const A8_PRODUCT_IMAGES = {
         condition: condition.key, liquidity: condition.liquidity,
         price, isReplica, discountPct, oldPrice, defects,
         city, distance: a8Distance(A8_MY_CITY, city), delivery: a8Pick(A8_DELIVERY),
-        sellerName: a8Pick(A8_NAMES), rating,
+        address: cat === 'realty' ? a8PropertyAddressFor(city, id) : a8AddressFor(city, id),
+        sellerName: a8Pick(A8_NAMES_BY_TYPE[botType]), rating,
         desc: a8GenerateAdDescription(product, isReplica),
         category: product.category,
         sourceFile: product.source_file,
-        botType: A8_BOT_TYPES[a8RandInt(0, 3)],
+        botType,
         mine: false, min: priceTpl.min, max: priceTpl.max,
         replicaMax: priceTpl.replicaMax, origMin: priceTpl.origMin
       });
@@ -5163,6 +5383,9 @@ const A8_PRODUCT_IMAGES = {
     myListings: [],
     archive: [],
     pendingDeliveries: [],
+    outgoingDeliveries: [],   // проданные с доставкой — деньги заморожены до приезда
+    parcelHistory: [],        // архив доставленных отправлений (для экрана "Почта")
+    postCtx: null,            // временный контекст открытой модалки выбора тарифа
     balance: 10000,
     chats: {},
     messages: [],
@@ -5191,7 +5414,8 @@ const A8_PRODUCT_IMAGES = {
   const A8_SAVE_KEY = 'a8_perekup_save_v1';
   const A8_SAVE_FIELDS = [
     'cat', 'search', 'sortMode', 'backpackTab', 'myCity', 'day', 'listings',
-    'inventory', 'myListings', 'archive', 'pendingDeliveries', 'balance',
+    'inventory', 'myListings', 'archive', 'pendingDeliveries', 'outgoingDeliveries',
+    'parcelHistory', 'balance',
     'chats', 'messages', 'clockMinutes', 'clockDay', 'asleep', 'unread',
     'bank', 'settings'
   ];
@@ -5282,13 +5506,42 @@ const A8_PRODUCT_IMAGES = {
   }
 
   function a8ProcessDeliveries() {
+    // Входящие: то, что купил игрок — попадает в инвентарь по приезду
     const arrived = a8State.pendingDeliveries.filter(d => d.arrivesDay <= a8State.day);
-    if (!arrived.length) return;
-    a8State.pendingDeliveries = a8State.pendingDeliveries.filter(d => d.arrivesDay > a8State.day);
-    arrived.forEach(d => {
-      a8State.inventory.push(d.item);
-      a8Toast('Доставлено: ' + d.item.title);
+    if (arrived.length) {
+      a8State.pendingDeliveries = a8State.pendingDeliveries.filter(d => d.arrivesDay > a8State.day);
+      arrived.forEach(d => {
+        a8State.inventory.push(d.item);
+        a8Toast('Доставлено: ' + d.item.title + (d.trackCode ? ' (трек ' + d.trackCode + ')' : ''));
+        a8ArchiveParcel(d, 'in');
+      });
+    }
+    // Исходящие: то, что продал игрок с доставкой — деньги были заморожены
+    // и зачисляются на баланс только теперь, когда посылка доехала до покупателя.
+    const arrivedOut = (a8State.outgoingDeliveries || []).filter(d => d.arrivesDay <= a8State.day);
+    if (arrivedOut.length) {
+      a8State.outgoingDeliveries = a8State.outgoingDeliveries.filter(d => d.arrivesDay > a8State.day);
+      arrivedOut.forEach(d => {
+        a8State.balance += d.amount;
+        a8State.bank.history = a8State.bank.history || [];
+        a8State.bank.history.push({ title: 'Продано: ' + d.item.title, amt: d.amount });
+        a8State.archive.push(Object.assign({}, d.item, { soldPrice: d.amount }));
+        a8Toast('Посылка доставлена, деньги зачислены: +' + a8Fmt(d.amount) + ' ₽ (' + d.item.title + ')');
+        a8ArchiveParcel(d, 'out');
+      });
+      a8RenderMyListings();
+    }
+    if (arrived.length || arrivedOut.length) a8UpdateBalanceUI();
+  }
+
+  function a8ArchiveParcel(d, direction) {
+    a8State.parcelHistory = a8State.parcelHistory || [];
+    a8State.parcelHistory.unshift({
+      trackCode: d.trackCode, direction: direction, title: d.item.title,
+      fromCity: d.fromCity, toCity: d.toCity, tariffLabel: d.tariffLabel,
+      amount: direction === 'out' ? d.amount : (d.item.boughtPrice || d.item.price)
     });
+    if (a8State.parcelHistory.length > 20) a8State.parcelHistory.length = 20;
   }
 
   function a8RenderTransit() {
@@ -5303,6 +5556,318 @@ const A8_PRODUCT_IMAGES = {
           '<div class="a8-transit-eta">Прибудет через ' + Math.max(0, d.arrivesDay - a8State.day) + ' дн.</div></div>' +
         '</div>'
       ).join('') + '</div>';
+  }
+
+  /* ==================== ПОЧТА: посылки, трек-номера, тарифы ==================== */
+  function a8ParcelStatusLine(d) {
+    const left = Math.max(0, d.arrivesDay - a8State.day);
+    return left <= 0 ? 'Прибывает' : 'В пути ещё ' + left + ' дн.';
+  }
+
+  function a8RenderParcels() {
+    const listEl = document.getElementById('post-parcel-list');
+    if (!listEl) return;
+    const incoming = a8State.pendingDeliveries.map(d => ({ d: d, dir: 'in' }));
+    const outgoing = (a8State.outgoingDeliveries || []).map(d => ({ d: d, dir: 'out' }));
+    const all = incoming.concat(outgoing);
+    if (!all.length) {
+      listEl.innerHTML = '<div class="a8-empty-state" style="padding:24px 10px;"><span>Нет активных отправлений</span></div>';
+    } else {
+      listEl.innerHTML = all.map(function(x) {
+        const d = x.d;
+        const amt = x.dir === 'out'
+          ? ('Заморожено: ' + a8Fmt(d.amount) + ' ₽')
+          : ('Оплачено: ' + a8Fmt(d.item.boughtPrice || d.item.price) + ' ₽');
+        return '<div class="mail-item post-parcel-item">' +
+          '<div class="mail-from-row"><div class="mail-from">' + d.item.title + '</div><div class="mail-time">' + d.trackCode + '</div></div>' +
+          '<div class="mail-preview">' + d.fromCity + ' → ' + d.toCity + ' · ' + (d.tariffLabel || '') + '</div>' +
+          '<div class="mail-preview">' + amt + ' · ' + a8ParcelStatusLine(d) + '</div>' +
+        '</div>';
+      }).join('');
+    }
+    const archEl = document.getElementById('post-parcel-archive');
+    if (archEl) {
+      const hist = a8State.parcelHistory || [];
+      archEl.innerHTML = !hist.length
+        ? '<div class="a8-empty-state" style="padding:24px 10px;"><span>Архив пуст</span></div>'
+        : hist.map(function(h) {
+            return '<div class="mail-item post-parcel-item">' +
+              '<div class="mail-from-row"><div class="mail-from">' + h.title + '</div><div class="mail-time">' + h.trackCode + '</div></div>' +
+              '<div class="mail-preview">' + h.fromCity + ' → ' + h.toCity + ' · ' + (h.tariffLabel || '') + '</div>' +
+              '<div class="mail-preview">Доставлено · ' + a8Fmt(h.amount) + ' ₽</div>' +
+            '</div>';
+          }).join('');
+    }
+  }
+
+  function a8SetMailTab(tab) {
+    document.querySelectorAll('#mail-tabs .mail-tab').forEach(t => t.classList.toggle('active', t.dataset.mailtab === tab));
+    document.querySelectorAll('.mail-tab-panel').forEach(p => p.classList.toggle('active', p.dataset.mailtabpanel === tab));
+    if (tab === 'parcels') a8RenderParcels();
+  }
+
+  function a8TrackLookup() {
+    const input = document.getElementById('post-track-input');
+    const resEl = document.getElementById('post-track-result');
+    if (!input || !resEl) return;
+    const code = input.value.trim().toUpperCase();
+    if (!code) { resEl.innerHTML = ''; return; }
+    const all = a8State.pendingDeliveries.concat(a8State.outgoingDeliveries || []);
+    const found = all.find(d => d.trackCode === code);
+    if (found) {
+      resEl.innerHTML = '<div class="mail-item post-parcel-item open">' +
+        '<div class="mail-from-row"><div class="mail-from">' + found.item.title + '</div><div class="mail-time">' + found.trackCode + '</div></div>' +
+        '<div class="mail-full" style="display:block;">Откуда: ' + found.fromCity + '<br>Куда: ' + found.toCity + '<br>Тариф: ' + (found.tariffLabel || '—') + '<br>' + a8ParcelStatusLine(found) + '</div>' +
+      '</div>';
+      return;
+    }
+    const hist = (a8State.parcelHistory || []).find(h => h.trackCode === code);
+    if (hist) {
+      resEl.innerHTML = '<div class="mail-item post-parcel-item open">' +
+        '<div class="mail-from-row"><div class="mail-from">' + hist.title + '</div><div class="mail-time">' + hist.trackCode + '</div></div>' +
+        '<div class="mail-full" style="display:block;">Откуда: ' + hist.fromCity + '<br>Куда: ' + hist.toCity + '<br>Статус: доставлено</div>' +
+      '</div>';
+      return;
+    }
+    resEl.innerHTML = '<div class="a8-empty-state" style="padding:16px 10px;"><span>Трек-номер не найден</span></div>';
+  }
+
+  function a8OpenPostTariff(mode) {
+    if (!a8ChatCtx) return;
+    const l = a8FindListing(a8ChatCtx.listingId);
+    if (!l) return;
+    const chat = a8GetChat(l, mode);
+    if (!chat.dealPrice) return;
+    const dist = mode === 'buy' ? (l.distance || 0) : a8Distance(l.city, chat.buyerCity || l.city);
+    a8State.postCtx = { mode: mode, listingId: l.id, dist: dist, price: chat.dealPrice };
+    const tariffSet = a8TariffSetFor(l);
+    const base = a8DeliveryInfo(dist, chat.dealPrice);
+    const bulkyNote = l.cat === 'auto' ? '<div class="post-tariff-note">Габаритный товар — специальные тарифы автовоза</div>' : '';
+    document.getElementById('post-tariff-body').innerHTML =
+      '<div class="sched-title" style="margin-bottom:10px;">Выберите тариф отправки</div>' +
+      bulkyNote +
+      tariffSet.map(function(t) {
+        const cost = Math.max(20, Math.round(base.cost * t.priceMult / 10) * 10);
+        const days = Math.max(1, Math.round(base.days * t.daysMult));
+        return '<div class="post-tariff-card" onclick="a8ConfirmPostTariff(\'' + t.id + '\')">' +
+          '<div class="post-tariff-icon">' + t.icon + '</div>' +
+          '<div class="post-tariff-info"><div class="post-tariff-label">' + t.label + '</div>' +
+          '<div class="post-tariff-desc">' + t.desc + '</div></div>' +
+          '<div class="post-tariff-price"><div class="post-tariff-cost">' + a8Fmt(cost) + '</div>' +
+          '<div class="post-tariff-days">' + days + ' дн.</div></div>' +
+        '</div>';
+      }).join('') +
+      '<button class="a8-btn a8-btn-secondary" style="width:100%;margin-top:8px;" onclick="a8ClosePostTariff()">Отмена</button>';
+    document.getElementById('post-tariff-modal').classList.add('open');
+  }
+
+  function a8ClosePostTariff() {
+    document.getElementById('post-tariff-modal').classList.remove('open');
+  }
+
+  /* ---- Новый поток оформления доставки: полноэкранный шаг "Почта" ---- */
+  function a8OpenPostCompose(mode) {
+    if (!a8ChatCtx) return;
+    const l = a8FindListing(a8ChatCtx.listingId);
+    if (!l) return;
+    const chat = a8GetChat(l, mode);
+    if (!chat.dealPrice) return;
+    const dist = mode === 'buy' ? (l.distance || 0) : a8Distance(l.city, chat.buyerCity || l.city);
+    const city = mode === 'buy' ? l.city : (chat.buyerCity || l.city);
+    const address = mode === 'buy' ? l.address : chat.buyerAddress;
+    a8State.postCtx = { mode: mode, listingId: l.id, dist: dist, price: chat.dealPrice, city: city, address: address, pending: null };
+    a8RenderPostComposeTariffs(l);
+    document.getElementById('a8-post-compose-overlay').classList.add('open');
+  }
+
+  function a8RenderPostComposeTariffs(l) {
+    const ctx = a8State.postCtx;
+    const tariffSet = a8TariffSetFor(l);
+    const base = a8DeliveryInfo(ctx.dist, ctx.price, l.cat);
+    const bulkyNote = l.cat === 'auto' ? '<div class="post-tariff-note">Габаритный товар — специальные тарифы автовоза</div>' : '';
+    document.getElementById('a8-post-compose-body').innerHTML =
+      '<div class="post-compose-summary">' +
+        '<div class="post-compose-row"><span>Товар</span><b>' + l.title + '</b></div>' +
+        '<div class="post-compose-row"><span>Цена</span><b>' + a8Fmt(ctx.price) + ' ₽</b></div>' +
+        '<div class="post-compose-row"><span>Адрес</span><b>' + ctx.city + ', ' + ctx.address + '</b></div>' +
+      '</div>' +
+      '<div class="sched-title" style="margin:14px 0 10px;">Выберите тариф отправки</div>' +
+      bulkyNote +
+      tariffSet.map(function(t) {
+        const cost = Math.max(10, Math.round(base.cost * t.priceMult / 10) * 10);
+        const days = Math.max(1, Math.round(base.days * t.daysMult));
+        return '<div class="post-tariff-card" onclick="a8ConfirmPostCompose(\'' + t.id + '\')">' +
+          '<div class="post-tariff-icon">' + t.icon + '</div>' +
+          '<div class="post-tariff-info"><div class="post-tariff-label">' + t.label + '</div>' +
+          '<div class="post-tariff-desc">' + t.desc + '</div></div>' +
+          '<div class="post-tariff-price"><div class="post-tariff-cost">' + a8Fmt(cost) + '</div>' +
+          '<div class="post-tariff-days">' + days + ' дн.</div></div>' +
+        '</div>';
+      }).join('');
+  }
+
+  function a8ClosePostCompose() {
+    document.getElementById('a8-post-compose-overlay').classList.remove('open');
+  }
+
+  function a8ConfirmPostCompose(tariffId) {
+    const ctx = a8State.postCtx;
+    if (!ctx) return;
+    const l = a8FindListing(ctx.listingId);
+    if (!l) return;
+    const chat = a8GetChat(l, ctx.mode);
+    const tariffSet = a8TariffSetFor(l);
+    const tariff = tariffSet.find(t => t.id === tariffId);
+    if (!tariff || !chat.dealPrice) return;
+    const base = a8DeliveryInfo(ctx.dist, ctx.price, l.cat);
+    const cost = Math.max(10, Math.round(base.cost * tariff.priceMult / 10) * 10);
+    const days = Math.max(1, Math.round(base.days * tariff.daysMult));
+
+    if (ctx.mode === 'buy' && a8State.balance < chat.dealPrice + cost) {
+      a8Toast('Недостаточно средств на балансе');
+      return;
+    }
+
+    document.getElementById('a8-post-compose-body').innerHTML =
+      '<div class="post-compose-loading"><div class="post-compose-spinner"></div><div>Оформляем отправление...</div></div>';
+
+    setTimeout(function() {
+      const trackCode = a8GenerateTrackCode();
+      a8State.postCtx.pending = { tariff: tariff, cost: cost, days: days, trackCode: trackCode };
+      document.getElementById('a8-post-compose-body').innerHTML =
+        '<div class="post-compose-success">' +
+          '<div class="post-compose-check">✅</div>' +
+          '<div class="post-compose-success-title">Доставка успешно оформлена. Трек-номер: ' + trackCode + '</div>' +
+          '<div class="post-compose-track-row">Трек: <b>' + trackCode + '</b>' +
+            '<button class="post-track-btn" onclick="a8CopyTrackCode(\'' + trackCode + '\')">Копировать</button>' +
+          '</div>' +
+          '<button class="a8-btn a8-btn-primary" style="width:100%;margin-top:18px;" onclick="a8SendPostComposeResult()">Отправить покупателю</button>' +
+        '</div>';
+    }, 1100);
+  }
+
+  function a8CopyTrackCode(code) {
+    if (navigator.clipboard) navigator.clipboard.writeText(code).catch(function(){});
+    a8Toast('Трек-номер скопирован');
+  }
+
+  function a8SendPostComposeResult() {
+    const ctx = a8State.postCtx;
+    if (!ctx || !ctx.pending) return;
+    const l = a8FindListing(ctx.listingId);
+    if (!l) return;
+    const chat = a8GetChat(l, ctx.mode);
+    const tariff = ctx.pending.tariff, cost = ctx.pending.cost, days = ctx.pending.days, trackCode = ctx.pending.trackCode;
+    a8ClosePostCompose();
+
+    if (ctx.mode === 'buy') {
+      const total = chat.dealPrice + cost;
+      a8State.balance -= total;
+      kbApplyCashback(l, chat.dealPrice);
+      a8UpdateBalanceUI();
+      a8PlayDeal();
+      a8Vibrate([15, 40, 15]);
+      chat.completed = true;
+      a8State.bank.history = a8State.bank.history || [];
+      a8State.pendingDeliveries.push({
+        arrivesDay: a8State.day + days, totalDays: days, trackCode: trackCode, tariffLabel: tariff.label,
+        fromCity: l.city, toCity: a8State.myCity,
+        item: Object.assign({}, l, { boughtPrice: chat.dealPrice, condition: l.condition, conditionLabel: l.conditionLabel, liquidity: l.liquidity })
+      });
+      a8State.bank.history.push({ title: 'Покупка: ' + l.title, amt: -total });
+      a8PushMsg(chat, 'sys', 'Доставка оформлена. Оплачено: ' + a8Fmt(chat.dealPrice) + ' + доставка ' + a8Fmt(cost) + '. Трек-номер: ' + trackCode + '. Прибудет через ' + days + ' дн.');
+      a8RemoveListing(l.id);
+    } else {
+      const buyerCity = chat.buyerCity || l.city;
+      a8State.outgoingDeliveries.push({
+        arrivesDay: a8State.day + days, totalDays: days, trackCode: trackCode, tariffLabel: tariff.label,
+        fromCity: l.city, toCity: buyerCity, amount: chat.dealPrice, item: Object.assign({}, l)
+      });
+      chat.completed = true;
+      a8State.myListings = a8State.myListings.filter(x => x.id !== l.id);
+      a8State.listings = a8State.listings.filter(x => x.id !== l.id);
+      a8PlayDeal();
+      a8Vibrate([15, 40, 15]);
+      a8PushMsg(chat, 'sys', 'Продано за ' + a8Fmt(chat.dealPrice) + ' · доставка (' + tariff.label + '), ' + days + ' дн. в пути. Трек-номер: ' + trackCode + '. Деньги поступят на баланс после доставки покупателю.');
+      a8RenderMyListings();
+    }
+
+    a8State.postCtx = null;
+    a8RenderTransit();
+    a8RenderParcels();
+    a8OpenChat(l.id, ctx.mode); // возврат в чат Авито
+    a8PushMsg(chat, 'bot', 'Трек-номер: ' + trackCode); // авто-сообщение с треком
+    a8RenderChat(chat, l);
+  }
+
+  function a8ConfirmPostTariff(tariffId) {
+    const ctx = a8State.postCtx;
+    if (!ctx) return;
+    const l = a8FindListing(ctx.listingId);
+    if (!l) return;
+    const chat = a8GetChat(l, ctx.mode);
+    const tariffSet = a8TariffSetFor(l);
+    const tariff = tariffSet.find(t => t.id === tariffId);
+    if (!tariff || !chat.dealPrice) return;
+    const base = a8DeliveryInfo(ctx.dist, ctx.price);
+    const cost = Math.max(20, Math.round(base.cost * tariff.priceMult / 10) * 10);
+    const days = Math.max(1, Math.round(base.days * tariff.daysMult));
+    a8ClosePostTariff();
+
+    if (ctx.mode === 'buy') {
+      const total = chat.dealPrice + cost;
+      if (a8State.balance < total) { a8PushMsg(chat, 'sys', 'Недостаточно средств на балансе (нужно ' + a8Fmt(total) + ')'); return; }
+      a8State.balance -= total;
+      kbApplyCashback(l, chat.dealPrice);
+      a8UpdateBalanceUI();
+      a8PlayDeal();
+      a8Vibrate([15, 40, 15]);
+      chat.completed = true;
+      a8State.bank.history = a8State.bank.history || [];
+      const trackCode = a8GenerateTrackCode();
+      a8State.pendingDeliveries.push({
+        arrivesDay: a8State.day + days,
+        totalDays: days,
+        trackCode: trackCode,
+        tariffLabel: tariff.label,
+        fromCity: l.city,
+        toCity: a8State.myCity,
+        item: Object.assign({}, l, { boughtPrice: chat.dealPrice, condition: l.condition, conditionLabel: l.conditionLabel, liquidity: l.liquidity })
+      });
+      a8State.bank.history.push({ title: 'Покупка: ' + l.title, amt: -total });
+      a8PushMsg(chat, 'me', 'Оформляю доставку (' + tariff.label + ').');
+      a8PushMsg(chat, 'sys', 'Доставка оформлена от ' + l.city + ', ' + l.address + '. Оплачено: ' + a8Fmt(chat.dealPrice) + ' + доставка ' + a8Fmt(cost) + '. Трек-номер: ' + trackCode + '. Прибудет через ' + days + ' дн.');
+      a8RemoveListing(l.id);
+      a8RenderTransit();
+      a8RenderParcels();
+      setTimeout(a8CloseChat, 900);
+    } else {
+      // Продажа с доставкой: деньги замораживаются и зачислятся на баланс
+      // только когда посылка доедет до покупателя (см. a8ProcessDeliveries).
+      const trackCode = a8GenerateTrackCode();
+      const buyerCity = chat.buyerCity || l.city;
+      a8State.outgoingDeliveries.push({
+        arrivesDay: a8State.day + days,
+        totalDays: days,
+        trackCode: trackCode,
+        tariffLabel: tariff.label,
+        fromCity: l.city,
+        toCity: buyerCity,
+        amount: chat.dealPrice,
+        item: Object.assign({}, l)
+      });
+      chat.completed = true;
+      a8State.myListings = a8State.myListings.filter(x => x.id !== l.id);
+      a8State.listings = a8State.listings.filter(x => x.id !== l.id);
+      a8PlayDeal();
+      a8Vibrate([15, 40, 15]);
+      a8PushMsg(chat, 'me', 'Оформляю доставку до ' + buyerCity + ' (' + tariff.label + ').');
+      a8PushMsg(chat, 'sys', 'Продано за ' + a8Fmt(chat.dealPrice) + ' · доставка (' + tariff.label + '), ' + days + ' дн. в пути. Трек-номер: ' + trackCode + '. Деньги поступят на баланс после доставки покупателю.');
+      a8RenderMyListings();
+      a8RenderTransit();
+      a8RenderParcels();
+      setTimeout(a8CloseChat, 900);
+    }
   }
 
   /* ---- Tabs ---- */
@@ -5589,7 +6154,7 @@ const A8_PRODUCT_IMAGES = {
     const key = listing.id + ':' + mode;
     if (!a8State.chats[key]) {
       const factor = A8_BOT_FACTOR[listing.botType];
-      a8State.chats[key] = {
+      const chat = {
         listingId: listing.id, mode,
         log: [],
         rounds: 0,
@@ -5600,6 +6165,18 @@ const A8_PRODUCT_IMAGES = {
         started: false,
         awaitingFulfillment: false
       };
+      // Sell mode: the bot buyer isn't necessarily from the player's own
+      // city — pick one (real estate stays local, nobody buys a flat
+      // sight-unseen from another city) so an out-of-town sale can trigger
+      // its own delivery branch, same as buying does.
+      if (mode !== 'buy') {
+        const otherCities = A8_CITIES.filter(c => c !== a8State.myCity);
+        chat.buyerCity = (listing.cat === 'realty' || Math.random() < 0.45 || !otherCities.length)
+          ? a8State.myCity
+          : a8Pick(otherCities);
+        chat.buyerAddress = a8AddressFor(chat.buyerCity, listing.id + ':buyer');
+      }
+      a8State.chats[key] = chat;
     }
     return a8State.chats[key];
   }
@@ -5666,6 +6243,8 @@ const A8_PRODUCT_IMAGES = {
     if (chat.revealed < chat.log.length) {
       // Next message waiting to be shown is from the bot — animate it.
       chatQuickEl.innerHTML = '';
+      const delBtn = document.getElementById('a8-chat-delivery-btn');
+      if (delBtn) delBtn.style.display = 'none';
       if (isActiveChat && !chat.typingActive) a8StartBotTyping(chat, l);
       return;
     }
@@ -5689,6 +6268,9 @@ const A8_PRODUCT_IMAGES = {
   }
 
   function a8RenderQuickReplies(chat, l) {
+    const delBtn = document.getElementById('a8-chat-delivery-btn');
+    if (delBtn) { delBtn.style.display = 'none'; delBtn.innerHTML = ''; }
+
     if (chat.completed) {
       chatQuickEl.innerHTML = '<div class="a8-quick-chip decline" style="cursor:default;">Сделка завершена</div>';
       return;
@@ -5706,13 +6288,24 @@ const A8_PRODUCT_IMAGES = {
         return;
       }
       if (chat.dealPrice && chat.awaitingFulfillment) {
-        const dist = l.distance || 0;
-        const travelCost = a8TravelCost(dist, chat.dealPrice);
-        const dInfo = a8DeliveryInfo(dist, chat.dealPrice);
-        chips += '<div class="a8-quick-chip deal" onclick="a8ChatAsk(\'pickup\')">Самовывоз (+' + a8Fmt(travelCost) + ' на проезд)</div>';
-        chips += '<div class="a8-quick-chip deal" onclick="a8ChatAsk(\'delivery\')">Доставка за ' + a8Fmt(dInfo.cost) + ' (' + dInfo.days + ' дн.)</div>';
+        if (l.cat === 'realty') {
+          chips += '<div class="a8-quick-chip deal" onclick="a8ChatAsk(\'inspect\')">🏠 Осмотреть квартиру</div>';
+          chips += '<div class="a8-quick-chip decline" onclick="a8ChatAsk(\'bye\')">Передумал, отказаться</div>';
+          chatQuickEl.innerHTML = chips;
+          return;
+        }
+        const sameCity = l.city === a8State.myCity;
+        if (sameCity) {
+          const dist = l.distance || 0;
+          const travelCost = a8TravelCost(dist, chat.dealPrice);
+          chips += '<div class="a8-quick-chip deal" onclick="a8ChatAsk(\'pickup\')">Самовывоз (+' + a8Fmt(travelCost) + ' на проезд)</div>';
+        }
         chips += '<div class="a8-quick-chip decline" onclick="a8ChatAsk(\'bye\')">Передумал, отказаться</div>';
         chatQuickEl.innerHTML = chips;
+        if (delBtn) {
+          delBtn.style.display = 'block';
+          delBtn.innerHTML = '<button class="a8-chat-delivery-cta" onclick="a8OpenPostCompose(\'buy\')">📦 Оформить доставку на ' + l.city + ', ' + l.address + '</button>';
+        }
         return;
       }
       if (chat.dealPrice) {
@@ -5728,6 +6321,24 @@ const A8_PRODUCT_IMAGES = {
       chips += '<div class="a8-quick-chip" onclick="a8ChatAsk(\'where\')">Где забрать?</div>';
       chips += '<div class="a8-quick-chip" onclick="a8ChatAsk(\'orig\')">' + (l.isReplica === null ? 'Всё исправно?' : 'Это оригинал?') + '</div>';
     } else {
+      if (chat.dealPrice && chat.awaitingFulfillment) {
+        if (l.cat === 'realty') {
+          chips += '<div class="a8-quick-chip deal" onclick="a8ChatAsk(\'sell_inspect\')">🏠 Осмотреть квартиру</div>';
+          chatQuickEl.innerHTML = chips;
+          return;
+        }
+        const buyerCity = chat.buyerCity || l.city;
+        const sameCity = buyerCity === l.city;
+        if (sameCity) {
+          chips += '<div class="a8-quick-chip deal" onclick="a8ChatAsk(\'sell_pickup\')">Покупатель заберёт сам</div>';
+        }
+        chatQuickEl.innerHTML = chips;
+        if (delBtn) {
+          delBtn.style.display = 'block';
+          delBtn.innerHTML = '<button class="a8-chat-delivery-cta" onclick="a8OpenPostCompose(\'sell\')">📦 Оформить доставку на ' + buyerCity + ', ' + (chat.buyerAddress || '') + '</button>';
+        }
+        return;
+      }
       chips += '<div class="a8-quick-chip" onclick="a8OpenOfferInput()">Торг</div>';
       chips += '<div class="a8-quick-chip" onclick="a8ChatAsk(\'final\')">Финальная цена</div>';
       chips += '<div class="a8-quick-chip deal" onclick="a8ChatAsk(\'sellnow\')">Продать за ' + a8Fmt(chat.dealPrice) + '</div>';
@@ -5765,6 +6376,25 @@ const A8_PRODUCT_IMAGES = {
     a8RenderChat(chat, l);
   }
 
+  /* Pushes the seller's "how to get the item" reply once a buy-mode deal is
+     struck. Real estate always reveals the property address and offers only
+     an in-person viewing — delivery is never on the table for a flat. A
+     cross-city item reveals the seller's address and points at delivery;
+     a same-city item just offers to sort out pickup. */
+  function a8PushMsgFulfillment(chat, l) {
+    if (l.cat === 'realty') {
+      a8PushMsg(chat, 'bot', 'Адрес квартиры: ' + l.city + ', ' + l.address + '. Приезжайте на осмотр, я подойду с ключами.');
+      return;
+    }
+    if (l.city !== a8State.myCity) {
+      // Разные города — самовывоза нет, точный адрес продавцу пока не нужен раскрывать:
+      // его подставит Почта автоматически при оформлении отправления.
+      a8PushMsg(chat, 'bot', 'Я в другом городе (' + l.city + ') — самовывоз не получится, оформляйте доставку.');
+      return;
+    }
+    a8PushMsg(chat, 'bot', 'Мой адрес: ' + l.city + ', ' + l.address + '. Можете забрать сами или закажите доставку — как удобнее.');
+  }
+
   function a8HandleBuyAction(chat, l, action) {
     const factor = A8_BOT_FACTOR[l.botType];
     if (action === 'defect') {
@@ -5781,7 +6411,11 @@ const A8_PRODUCT_IMAGES = {
     }
     if (action === 'where') {
       a8PushMsg(chat, 'me', 'Где забрать?');
-      const line = l.botType === 'granny' ? l.city + ', приходи в любое время, я почти всегда дома.' : l.city + ', ' + l.delivery.toLowerCase() + '.';
+      if (l.city !== a8State.myCity) {
+        a8PushMsg(chat, 'bot', 'Я в другом городе (' + l.city + '), самовывоза нет — только доставка.');
+        return;
+      }
+      const line = l.botType === 'granny' ? l.city + ', ' + l.address + ', приходи в любое время, я почти всегда дома.' : l.city + ', ' + l.address + ' · ' + l.delivery.toLowerCase() + '.';
       a8PushMsg(chat, 'bot', line);
       return;
     }
@@ -5804,7 +6438,7 @@ const A8_PRODUCT_IMAGES = {
       if (!chat.dealPrice) return;
       chat.awaitingFulfillment = true;
       a8PushMsg(chat, 'me', 'Договорились, как получить товар?');
-      a8PushMsg(chat, 'bot', 'Можете забрать сами или заказать доставку — как удобнее.');
+      a8PushMsgFulfillment(chat, l);
       return;
     }
     if (action === 'buynow') {
@@ -5812,11 +6446,30 @@ const A8_PRODUCT_IMAGES = {
       chat.current = l.price;
       chat.awaitingFulfillment = true;
       a8PushMsg(chat, 'me', 'Беру сразу за ' + a8Fmt(l.price) + ', без торга.');
-      a8PushMsg(chat, 'bot', 'Отлично, беру в работу! Как получить товар?');
+      a8PushMsgFulfillment(chat, l);
+      return;
+    }
+    if (action === 'inspect') {
+      if (!chat.dealPrice || l.cat !== 'realty') return;
+      if (a8State.balance < chat.dealPrice) { a8PushMsg(chat, 'sys', 'Недостаточно средств на балансе (нужно ' + a8Fmt(chat.dealPrice) + ')'); return; }
+      a8State.balance -= chat.dealPrice;
+      kbApplyCashback(l, chat.dealPrice);
+      a8UpdateBalanceUI();
+      a8PlayDeal();
+      a8Vibrate([15, 40, 15]);
+      chat.completed = true;
+      a8State.bank.history = a8State.bank.history || [];
+      a8State.inventory.push(Object.assign({}, l, { boughtPrice: chat.dealPrice, condition: l.condition, conditionLabel: l.conditionLabel, liquidity: l.liquidity }));
+      a8State.bank.history.push({ title: 'Покупка: ' + l.title, amt: -chat.dealPrice });
+      a8PushMsg(chat, 'me', 'Приеду осмотреть квартиру по адресу.');
+      a8PushMsg(chat, 'sys', 'Сделка завершена: ' + a8Fmt(chat.dealPrice) + '. Ключи и документы у продавца по адресу выше.');
+      a8RemoveListing(l.id);
+      setTimeout(a8CloseChat, 700);
       return;
     }
     if (action === 'pickup' || action === 'delivery') {
       if (!chat.dealPrice) return;
+      if (action === 'pickup' && l.city !== a8State.myCity) { a8PushMsg(chat, 'sys', 'Самовывоз недоступен — товар в другом городе.'); return; }
       const dist = l.distance || 0;
       const fee = action === 'pickup' ? a8TravelCost(dist, chat.dealPrice) : a8DeliveryInfo(dist, chat.dealPrice).cost;
       const total = chat.dealPrice + fee;
@@ -5842,8 +6495,8 @@ const A8_PRODUCT_IMAGES = {
           item: Object.assign({}, l, { boughtPrice: chat.dealPrice, condition: l.condition, conditionLabel: l.conditionLabel, liquidity: l.liquidity })
         });
         a8State.bank.history.push({ title: 'Покупка: ' + l.title, amt: -total });
-        a8PushMsg(chat, 'me', 'Давайте доставкой.');
-        a8PushMsg(chat, 'sys', 'Оплачено: ' + a8Fmt(chat.dealPrice) + ' + доставка ' + a8Fmt(fee) + '. Прибудет через ' + info.days + ' дн. (обновляйте ассортимент, чтобы промотать время)');
+        a8PushMsg(chat, 'me', 'Оформляю доставку.');
+        a8PushMsg(chat, 'sys', 'Доставка оформлена от ' + l.city + ', ' + l.address + '. Оплачено: ' + a8Fmt(chat.dealPrice) + ' + доставка ' + a8Fmt(fee) + '. Прибудет через ' + info.days + ' дн. (обновляйте ассортимент, чтобы промотать время)');
         a8RemoveListing(l.id);
         setTimeout(a8CloseChat, 900);
       }
@@ -5875,6 +6528,42 @@ const A8_PRODUCT_IMAGES = {
     }
   }
 
+  /* Buyer's "how will you get it" reply once a sell-mode deal is struck.
+     Mirrors a8PushMsgFulfillment: a flat is only ever inspected in person,
+     an out-of-town buyer needs delivery, a local buyer just needs pickup
+     sorted out. */
+  function a8PushMsgSellFulfillment(chat, l) {
+    if (l.cat === 'realty') {
+      a8PushMsg(chat, 'bot', 'Отлично! Подъеду по адресу для осмотра и оформления: ' + l.city + ', ' + l.address + '.');
+      return;
+    }
+    if (chat.buyerCity !== l.city) {
+      // Разные города — у покупателя самовывоза быть не может, только доставка.
+      a8PushMsg(chat, 'bot', 'Отлично беру! Я из другого города (' + chat.buyerCity + ') — оформите мне доставку.');
+      return;
+    }
+    a8PushMsg(chat, 'bot', 'Отлично беру, как вам удобно — заберу сам или давайте курьером.');
+  }
+
+  function a8FinalizeSale(chat, l, sysNote) {
+    chat.completed = true;
+    a8State.balance += chat.dealPrice;
+    a8PlayDeal();
+    a8Vibrate([15, 40, 15]);
+    a8State.myListings = a8State.myListings.filter(x => x.id !== l.id);
+    a8State.listings = a8State.listings.filter(x => x.id !== l.id);
+    a8State.archive.push(Object.assign({}, l, { soldPrice: chat.dealPrice }));
+    a8PushMsg(chat, 'sys', sysNote);
+    a8UpdateBalanceUI();
+    a8RenderMyListings();
+    setTimeout(a8CloseChat, 600);
+  }
+
+  /* Фразы ПРОДАВЦА (меня) при подтверждении сделки в режиме продажи —
+     раньше здесь стояла фраза покупателя "Спасибо, беру!", хотя в этот
+     момент товар продаю я, а не покупаю. */
+  const A8_SELLER_ACCEPT_PHRASES = ['Хорошо, договорились! Как вам удобнее получить товар?', 'Отлично, продаю! Как вам удобнее получить товар?', 'Договорились, оформляю продажу. Как вам удобнее получить товар?', 'Ладно, по рукам! Как вам удобнее получить товар?'];
+
   function a8HandleSellAction(chat, l, action) {
     if (action === 'bye') {
       a8PushMsg(chat, 'me', 'К сожалению, отказываю.');
@@ -5900,17 +6589,29 @@ const A8_PRODUCT_IMAGES = {
     }
     if (action === 'sellnow') {
       if (!chat.dealPrice) return;
-      chat.completed = true;
-      a8State.balance += chat.dealPrice;
-      a8PlayDeal();
-      a8Vibrate([15, 40, 15]);
-      a8State.myListings = a8State.myListings.filter(x => x.id !== l.id);
-      a8State.listings = a8State.listings.filter(x => x.id !== l.id);
-      a8State.archive.push(Object.assign({}, l, { soldPrice: chat.dealPrice }));
-      a8PushMsg(chat, 'sys', 'Продано за ' + a8Fmt(chat.dealPrice));
-      a8UpdateBalanceUI();
-      a8RenderMyListings();
-      setTimeout(a8CloseChat, 600);
+      chat.awaitingFulfillment = true;
+      a8PushMsg(chat, 'me', a8Pick(A8_SELLER_ACCEPT_PHRASES));
+      a8PushMsgSellFulfillment(chat, l);
+      return;
+    }
+    if (action === 'sell_inspect') {
+      if (!chat.dealPrice || l.cat !== 'realty') return;
+      a8FinalizeSale(chat, l, 'Продано за ' + a8Fmt(chat.dealPrice) + '. Покупатель приедет на осмотр по адресу.');
+      return;
+    }
+    if (action === 'sell_pickup') {
+      if (!chat.dealPrice) return;
+      if ((chat.buyerCity || l.city) !== l.city) { a8PushMsg(chat, 'sys', 'Покупатель в другом городе — самовывоз недоступен.'); return; }
+      a8PushMsg(chat, 'me', 'Хорошо, забирайте сами.');
+      a8FinalizeSale(chat, l, 'Продано за ' + a8Fmt(chat.dealPrice) + ' · самовывоз');
+      return;
+    }
+    if (action === 'sell_deliver') {
+      if (!chat.dealPrice) return;
+      const dist = a8Distance(l.city, chat.buyerCity || l.city);
+      const dInfo = a8DeliveryInfo(dist, chat.dealPrice);
+      a8PushMsg(chat, 'me', 'Оформляю доставку до ' + (chat.buyerCity || l.city) + '.');
+      a8FinalizeSale(chat, l, 'Продано за ' + a8Fmt(chat.dealPrice) + ' · доставка курьером, ' + dInfo.days + ' дн. в пути');
       return;
     }
   }
@@ -6011,11 +6712,46 @@ const A8_PRODUCT_IMAGES = {
       const l = a8FindListing(c.listingId);
       if (!l) return '';
       const last = c.log[c.log.length - 1];
-      return '<div class="a8-mylist-card" style="cursor:pointer;" onclick="a8OpenChat(\'' + l.id + '\',\'' + c.mode + '\')">' +
-        '<div class="a8-mylist-thumb">' + a8Visual(l.cat, 22, l.emoji, l.sourceFile) + '</div>' +
-        '<div class="a8-mylist-info"><div class="a8-mylist-title">' + l.title + '</div><div class="a8-cart-price" style="color:rgba(255,255,255,0.5);">' + (last ? last.text.slice(0, 40) : '') + '</div></div>' +
+      const key = c.listingId + ':' + c.mode;
+      return '<div class="a8-swipe-row">' +
+        '<button class="a8-swipe-delete" onclick="a8DeleteChat(\'' + key + '\')">Удалить</button>' +
+        '<div class="a8-swipe-content a8-mylist-card" style="cursor:pointer;" onclick="a8OpenChat(\'' + l.id + '\',\'' + c.mode + '\')">' +
+          '<div class="a8-mylist-thumb">' + a8Visual(l.cat, 22, l.emoji, l.sourceFile) + '</div>' +
+          '<div class="a8-mylist-info"><div class="a8-mylist-title">' + l.title + '</div><div class="a8-cart-price" style="color:rgba(255,255,255,0.5);">' + (last ? last.text.slice(0, 40) : '') + '</div></div>' +
+        '</div>' +
       '</div>';
     }).join('');
+    a8InitSwipeRows();
+  }
+
+  function a8DeleteChat(key) {
+    delete a8State.chats[key];
+    a8RenderMessages();
+  }
+
+  function a8InitSwipeRows() {
+    document.querySelectorAll('#a8-msg-list .a8-swipe-content').forEach(function(row) {
+      let startX = 0, startY = 0, curX = 0, dragging = false, decided = false, isHorizontal = false;
+      const MAX = 76;
+      row.addEventListener('touchstart', function(e) {
+        startX = e.touches[0].clientX; startY = e.touches[0].clientY; curX = 0; dragging = true; decided = false; isHorizontal = false;
+        row.classList.add('dragging');
+      }, { passive:true });
+      row.addEventListener('touchmove', function(e) {
+        if (!dragging) return;
+        const dx = e.touches[0].clientX - startX;
+        const dy = e.touches[0].clientY - startY;
+        if (!decided) { isHorizontal = Math.abs(dx) > Math.abs(dy); decided = true; }
+        if (!isHorizontal) return;
+        curX = Math.max(-MAX, Math.min(0, dx));
+        row.style.transform = 'translateX(' + curX + 'px)';
+      }, { passive:true });
+      row.addEventListener('touchend', function() {
+        dragging = false;
+        row.classList.remove('dragging');
+        row.style.transform = curX < -MAX / 2 ? 'translateX(-' + MAX + 'px)' : 'translateX(0)';
+      });
+    });
   }
 
   /* ---- "Рюкзак" (backpack) — tabbed inventory grid ---- */
@@ -6235,14 +6971,16 @@ const A8_PRODUCT_IMAGES = {
     const dual = it.isReplica !== null && it.isReplica !== undefined;
     const customDesc = document.getElementById('a8-create-desc').value.trim();
     const descBonus = a8DescQuality(customDesc);
+    const myListingId = 'm' + (a8NextId++);
     const listing = {
-      id: 'm' + (a8NextId++), cat: it.cat, tplName: it.tplName, emoji: it.emoji,
+      id: myListingId, cat: it.cat, tplName: it.tplName, emoji: it.emoji,
       title: (it.title || it.tplName) + (dual ? (a8State.createIsReplica ? ' (реплика)' : ' (оригинал)') : ''),
       price, isReplica: dual ? a8State.createIsReplica : it.isReplica,
       condition: it.condition, conditionLabel: it.conditionLabel,
       liquidity: (it.liquidity || 1.0) * descBonus, descBonus, defects: it.defects || [],
       category: it.category, sourceFile: it.sourceFile,
       city: a8State.myCity, distance: 0, delivery: a8Pick(A8_DELIVERY),
+      address: it.cat === 'realty' ? a8PropertyAddressFor(a8State.myCity, myListingId) : a8AddressFor(a8State.myCity, myListingId),
       sellerName: userName || 'Вы', rating: '5.0',
       desc: customDesc || it.desc || ('Моё объявление. ' + (dual && a8State.createIsReplica ? 'Честно указываю: неоригинал.' : 'Товар в хорошем состоянии.') + (it.conditionLabel ? ' Состояние: ' + it.conditionLabel.toLowerCase() + '.' : '')),
       botType: 'chill', mine: true, min: it.min, max: it.max
