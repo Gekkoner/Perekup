@@ -313,8 +313,10 @@
   .icon-map { background:#fff; }
   .icon-backpack { background: linear-gradient(160deg, #a97e4a, #6b4a2b); }
   .icon-bank { background: linear-gradient(135deg,#ff8a00,#ff5e00); }
-  .icon-settings { background:#e4e4e4; }
+  .icon-settings { background:#fff; }
   .icon-sleep { background: linear-gradient(135deg,#3a3a6e,#15152b); }
+  .icon-mail { background: linear-gradient(140deg, #3fa8ff, #0a63d6); }
+  .icon-internet { background: linear-gradient(140deg, #34d1c5, #0f8f9e); }
 
   /* Overlay app screens (generic) */
   .overlay {
@@ -778,6 +780,33 @@
   .st-warn-title { font-size:16.5px; font-weight:800; color:#fff; text-align:center; margin-bottom:8px; }
   .st-warn-text { font-size:13px; color:rgba(255,255,255,0.55); text-align:center; line-height:1.45; margin-bottom:18px; }
   .overlay-sleep { background: radial-gradient(circle at 50% 30%, #23234a, #0a0a18 75%); }
+
+  /* ---- Mail app ---- */
+  .overlay-mail { align-items:stretch; justify-content:flex-start; background:#1c1c1e; padding:0; }
+  .theme-amoled .overlay-mail { background:#000; }
+  .mail-body { padding:0 18px 24px; overflow-y:auto; flex:1; }
+  .mail-title { font-size:26px; font-weight:800; color:#fff; padding:8px 0 16px; }
+  .mail-list { display:flex; flex-direction:column; gap:10px; }
+  .mail-item { position:relative; background:#2c2c2e; border-radius:14px; padding:12px 14px 12px 26px; cursor:pointer; }
+  .mail-dot { position:absolute; left:10px; top:18px; width:8px; height:8px; border-radius:50%; background:#3fa8ff; }
+  .mail-item.read .mail-dot { display:none; }
+  .mail-from-row { display:flex; justify-content:space-between; align-items:baseline; }
+  .mail-from { color:#fff; font-weight:700; font-size:14.5px; }
+  .mail-time { color:#8f8f96; font-size:12px; }
+  .mail-subject { color:#e4e4e6; font-size:14px; font-weight:600; margin-top:2px; }
+  .mail-preview, .mail-full { color:#9a9aa2; font-size:13px; line-height:1.4; margin-top:4px; }
+  .mail-full { display:none; }
+  .mail-item.open .mail-preview { display:none; }
+  .mail-item.open .mail-full { display:block; }
+
+  /* ---- Internet app ---- */
+  .overlay-internet { align-items:stretch; justify-content:flex-start; background:#f2f2f4; padding:0; }
+  .net-body { padding:0 18px 24px; overflow-y:auto; flex:1; }
+  .net-addressbar { display:flex; align-items:center; gap:8px; background:#e4e4e8; border-radius:12px; padding:9px 14px; margin-top:8px; color:#5a5a63; font-size:13px; }
+  .net-title { font-size:22px; font-weight:800; color:#1c1c1e; padding:16px 0 12px; }
+  .net-article { background:#fff; border-radius:14px; padding:14px 16px; margin-bottom:10px; box-shadow:0 2px 6px rgba(0,0,0,0.06); }
+  .net-article-title { color:#1c1c1e; font-weight:700; font-size:14.5px; margin-bottom:5px; }
+  .net-article-text { color:#5a5a63; font-size:13px; line-height:1.45; }
 
   /* ============ K-BANK ============ */
   .kb-root {
@@ -2167,12 +2196,34 @@
 
       <button class="app" onclick="openApp('settings')">
         <div class="icon icon-settings">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-            <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" stroke="#666" stroke-width="1.6" fill="none"/>
-            <path d="M19.4 13a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V19a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H4a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H10a1.65 1.65 0 0 0 1-1.51V4a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V10a1.65 1.65 0 0 0 1.51 1H20a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="#666" stroke-width="1.3" fill="none"/>
+          <svg width="38" height="38" viewBox="0 0 24 24">
+            <path fill="#cfd8e3" stroke="#12182b" stroke-width="1.15" stroke-linejoin="round" d="M19.14,12.94c0.04,-0.3 0.06,-0.61 0.06,-0.94c0,-0.32 -0.02,-0.64 -0.07,-0.94l2.03,-1.58c0.18,-0.14 0.23,-0.41 0.12,-0.61l-1.92,-3.32c-0.12,-0.22 -0.37,-0.29 -0.59,-0.22l-2.39,0.96c-0.5,-0.38 -1.03,-0.7 -1.62,-0.94L14.4,2.81c-0.04,-0.24 -0.24,-0.41 -0.48,-0.41h-3.84c-0.24,0 -0.43,0.17 -0.47,0.41L9.25,5.35C8.66,5.59 8.12,5.92 7.63,6.29L5.24,5.33c-0.22,-0.08 -0.47,0 -0.59,0.22L2.74,8.87C2.62,9.08 2.66,9.34 2.86,9.48l2.03,1.58C4.84,11.36 4.8,11.69 4.8,12s0.02,0.64 0.07,0.94l-2.03,1.58c-0.18,0.14 -0.23,0.41 -0.12,0.61l1.92,3.32c0.12,0.22 0.37,0.29 0.59,0.22l2.39,-0.96c0.5,0.38 1.03,0.7 1.62,0.94l0.36,2.54c0.05,0.24 0.24,0.41 0.48,0.41h3.84c0.24,0 0.44,-0.17 0.47,-0.41l0.36,-2.54c0.59,-0.24 1.13,-0.56 1.62,-0.94l2.39,0.96c0.22,0.08 0.47,0 0.59,-0.22l1.92,-3.32c0.12,-0.22 0.07,-0.47 -0.12,-0.61L19.14,12.94z M12,15.6c-1.98,0 -3.6,-1.62 -3.6,-3.6s1.62,-3.6 3.6,-3.6s3.6,1.62 3.6,3.6S13.98,15.6 12,15.6z"/>
           </svg>
         </div>
         <div class="app-label">Настройки</div>
+      </button>
+
+      <button class="app" onclick="openApp('mail')">
+        <div class="icon icon-mail">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="5.5" width="18" height="13" rx="2.2" stroke="#fff" stroke-width="1.6" fill="none"/>
+            <path d="M4 7l7.3 5.6a1.2 1.2 0 0 0 1.4 0L20 7" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+        <div class="app-label">Почта</div>
+      </button>
+
+      <button class="app" onclick="openApp('internet')">
+        <div class="icon icon-internet">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="8.2" stroke="#fff" stroke-width="1.6" fill="none"/>
+            <ellipse cx="12" cy="12" rx="3.4" ry="8.2" stroke="#fff" stroke-width="1.4" fill="none"/>
+            <line x1="3.8" y1="12" x2="20.2" y2="12" stroke="#fff" stroke-width="1.4"/>
+            <line x1="5.1" y1="7.3" x2="18.9" y2="7.3" stroke="#fff" stroke-width="1.2"/>
+            <line x1="5.1" y1="16.7" x2="18.9" y2="16.7" stroke="#fff" stroke-width="1.2"/>
+          </svg>
+        </div>
+        <div class="app-label">Интернет</div>
       </button>
 
       <button class="app" onclick="openApp('sleep')">
@@ -2630,6 +2681,82 @@
         <div class="a8-btn-row">
           <button class="a8-btn a8-btn-secondary" onclick="a8CloseResetConfirm()">Отмена</button>
           <button class="a8-btn a8-btn-danger" onclick="a8ConfirmReset()">Сбросить всё</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay overlay-mail" id="overlay-mail">
+      <div class="overlay-back" onclick="closeApp(event)">‹</div>
+      <div class="ov-status"><span class="ov-time-value">17:00</span><div class="battery"><div class="battery-body"><div class="battery-fill"></div></div><div class="battery-tip"></div></div></div>
+      <div class="mail-body">
+        <div class="mail-title">Почта</div>
+        <div class="mail-list" id="mail-list">
+
+          <div class="mail-item" data-mail="1" onclick="a8OpenMail(this)">
+            <div class="mail-dot"></div>
+            <div class="mail-from-row">
+              <div class="mail-from">Перекуп в России</div>
+              <div class="mail-time">09:14</div>
+            </div>
+            <div class="mail-subject">Добро пожаловать!</div>
+            <div class="mail-preview">Пара советов для старта: начинайте с дешёвых и ликвидных вещей — наушники и...</div>
+            <div class="mail-full">Пара советов для старта: начинайте с дешёвых и ликвидных вещей — наушники и зарядки уходят быстрее всего. Внимательно читайте состояние товара в объявлении перед покупкой, оно напрямую влияет на цену перепродажи. Удачных сделок!</div>
+          </div>
+
+          <div class="mail-item" data-mail="2" onclick="a8OpenMail(this)">
+            <div class="mail-dot"></div>
+            <div class="mail-from-row">
+              <div class="mail-from">Служба безопасности A8ito</div>
+              <div class="mail-time">Вчера</div>
+            </div>
+            <div class="mail-subject">Как не попасться на обман</div>
+            <div class="mail-preview">Никогда не переводите деньги до того, как увидите товар лично. Встречайтесь...</div>
+            <div class="mail-full">Никогда не переводите деньги до того, как увидите товар лично. Встречайтесь в людных местах и проверяйте товар перед оплатой. Если продавец торопит вас или отказывается от личной встречи — это повод насторожиться.</div>
+          </div>
+
+          <div class="mail-item" data-mail="3" onclick="a8OpenMail(this)">
+            <div class="mail-dot"></div>
+            <div class="mail-from-row">
+              <div class="mail-from">K Банк</div>
+              <div class="mail-time">2 дня назад</div>
+            </div>
+            <div class="mail-subject">Ваша карта готова</div>
+            <div class="mail-preview">Оформите карту K Банка прямо в приложении банка на главном экране, чтобы...</div>
+            <div class="mail-full">Оформите карту K Банка прямо в приложении банка на главном экране, чтобы получать кэшбэк с покупок и удобно отслеживать историю операций. Оформление занимает меньше минуты.</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay overlay-internet" id="overlay-internet">
+      <div class="overlay-back" onclick="closeApp(event)">‹</div>
+      <div class="ov-status"><span class="ov-time-value">17:00</span><div class="battery"><div class="battery-body"><div class="battery-fill"></div></div><div class="battery-tip"></div></div></div>
+      <div class="net-body">
+        <div class="net-addressbar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#8f8f96" stroke-width="1.6" fill="none"/><path d="M12 3a13 13 0 0 1 0 18 13 13 0 0 1 0-18z" stroke="#8f8f96" stroke-width="1.3" fill="none"/><path d="M3 12h18" stroke="#8f8f96" stroke-width="1.3"/></svg>
+          <span>перекуп-новости.рф</span>
+        </div>
+        <div class="net-title">Новости и статьи</div>
+
+        <div class="net-article">
+          <div class="net-article-title">5 признаков реплики, которую легко принять за оригинал</div>
+          <div class="net-article-text">Качественные копии часто отличаются только мелочами: швами, весом, звуком кнопок и запахом упаковки. Всегда сверяйте серийный номер, если он есть, и просите дополнительные фото в хорошем освещении.</div>
+        </div>
+
+        <div class="net-article">
+          <div class="net-article-title">Как быстрее найти покупателя</div>
+          <div class="net-article-text">Объявления с честным и подробным описанием состояния закрываются в среднем быстрее. Не бойтесь указывать небольшие дефекты — это снижает количество бесполезных сообщений и повышает доверие.</div>
+        </div>
+
+        <div class="net-article">
+          <div class="net-article-title">Тренды перепродажи в этом сезоне</div>
+          <div class="net-article-text">Спрос на компактную электронику стабильно высокий круглый год, а вот брендовая одежда и обувь заметно дорожают ближе к праздникам — самое время присматриваться к сезонным закупкам заранее.</div>
+        </div>
+
+        <div class="net-article">
+          <div class="net-article-title">Гайд: как торговаться при личной встрече</div>
+          <div class="net-article-text">Осматривайте товар молча, не спешите — пауза сама по себе снижает цену продавца. Называйте конкретную сумму, а не "давайте скинете что-нибудь", и будьте готовы уйти, если условия не устроят.</div>
         </div>
       </div>
     </div>
@@ -4499,6 +4626,9 @@ const A8_PRODUCT_IMAGES = {
     if (name === 'settings') a8RenderSettings();
     if (name === 'map') a8MapOpen();
   }
+  function a8OpenMail(el) {
+    el.classList.add('open', 'read');
+  }
   function closeApp(e) {
     e.stopPropagation();
     document.querySelectorAll('.overlay').forEach(o => o.classList.remove('active'));
@@ -6256,20 +6386,21 @@ const A8_PRODUCT_IMAGES = {
 
   function a8ClockTick() {
     if (a8State.asleep) return;
-    a8State.clockMinutes += 0.5; // 1 game minute = 2 real seconds (this tick fires every 1s)
+    const minPerTick = 1; // 1 game minute = 1 real second (tick fires every 1s)
+    a8State.clockMinutes += minPerTick;
     if (a8State.clockMinutes >= 1440) {
       a8State.clockMinutes -= 1440;
       a8State.clockDay++;
       a8AdvanceMarketDay(); // a new in-game day quietly refreshes the market
     }
     a8UpdateClockUI();
-    a8State.buyerTimer += 0.5;
+    a8State.buyerTimer += minPerTick;
     if (a8State.buyerTimer >= a8State.nextBuyerIn) {
       a8State.buyerTimer = 0;
       a8State.nextBuyerIn = a8RandInt(15, 70);
       if (a8State.myListings.length && Math.random() < 0.7) a8SpawnBuyerMessage(false);
     }
-    a8State.trickleTimer = (a8State.trickleTimer || 0) + 0.5;
+    a8State.trickleTimer = (a8State.trickleTimer || 0) + minPerTick;
     if (a8State.trickleTimer >= a8State.nextTrickleIn) {
       a8State.trickleTimer = 0;
       a8State.nextTrickleIn = a8RandInt(90, 180);
