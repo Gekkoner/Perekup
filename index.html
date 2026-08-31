@@ -5190,10 +5190,12 @@ const A8_PRODUCT_IMAGES = {
       data.favorites = Array.from(a8State.favorites);
       data.cart = Array.from(a8State.cart);
       data.nextId = a8NextId;
+      data.playerName = userName;
       data.savedAt = Date.now();
       localStorage.setItem(A8_SAVE_KEY, JSON.stringify(data));
     } catch (e) {}
   }
+  let a8LoadedSave = false;
   function a8LoadState() {
     try {
       const raw = localStorage.getItem(A8_SAVE_KEY);
@@ -5203,7 +5205,9 @@ const A8_PRODUCT_IMAGES = {
       a8State.favorites = new Set(data.favorites || []);
       a8State.cart = new Set(data.cart || []);
       if (data.nextId) a8NextId = data.nextId;
+      if (data.playerName) userName = data.playerName;
       A8_MY_CITY = a8State.myCity;
+      a8LoadedSave = true;
       return true;
     } catch (e) { return false; }
   }
@@ -7146,6 +7150,17 @@ const A8_PRODUCT_IMAGES = {
   a8RenderMyListings();
   a8UpdateClockUI();
   a8UpdateMsgBadge();
+
+  /* ---- Returning player: if we already have a saved name + city, skip the
+     lock/registration screen entirely and land straight on the home screen
+     with the profile already filled in — exactly like a phone that's
+     already been set up. ---- */
+  if (a8LoadedSave && userName) {
+    document.getElementById('lock-screen').classList.add('hidden');
+    document.getElementById('home-screen').classList.add('active');
+    document.getElementById('a8-profile-name').textContent = userName;
+    document.getElementById('a8-profile-avatar').textContent = userName.charAt(0).toUpperCase();
+  }
 
   /* ---- Autosave: periodic + on tab hide/close, so progress is never lost ---- */
   setInterval(a8SaveState, 5000);
