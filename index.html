@@ -4566,8 +4566,14 @@ const A8_PRODUCT_IMAGES = {
   });
 
   function lockOpenCityPicker() {
+    // If the name field's keyboard is still open, blurring it first can
+    // eat the very same tap on some mobile browsers/webviews (the tap just
+    // dismisses the keyboard instead of also opening the sheet below it).
+    // Deferring the actual open by a tick avoids that race.
+    const wasFocused = document.activeElement === lockInput;
     lockInput.blur();
-    document.getElementById('lock-city-modal').classList.add('open');
+    const openModal = () => document.getElementById('lock-city-modal').classList.add('open');
+    if (wasFocused) { setTimeout(openModal, 60); } else { openModal(); }
   }
   function lockCloseCityPicker() {
     document.getElementById('lock-city-modal').classList.remove('open');
@@ -4613,6 +4619,12 @@ const A8_PRODUCT_IMAGES = {
         a8State.page = 1;
         a8RenderFeed();
         a8UpdateBalanceUI();
+        // Persist name + city immediately, don't wait for the periodic
+        // autosave — otherwise closing the app right after onboarding
+        // (before the next 5s tick or a beforeunload/pagehide event that
+        // some mobile browsers/webviews don't reliably fire) would lose it
+        // and the lock screen would ask again next time.
+        a8SaveState();
       }, 0);
     });
   }
