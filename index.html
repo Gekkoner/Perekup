@@ -1838,8 +1838,8 @@
     display:flex; align-items:center; justify-content:center;
     color:#fff; font-size:16px; cursor:pointer; flex-shrink:0;
   }
-  .a8-chat-title { display:flex; flex-direction:column; gap:1px; min-width:0; }
-  .a8-chat-name { font-size:14.5px; font-weight:700; color:#fff; }
+  .a8-chat-title { display:flex; flex-direction:column; gap:1px; min-width:0; flex:1 1 auto; overflow:hidden; }
+  .a8-chat-name { font-size:14.5px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
   .a8-chat-status { font-size:11.5px; color:rgba(255,255,255,0.4); }
   .a8-chat-pinned {
     display:flex; align-items:center; gap:10px;
@@ -2142,6 +2142,15 @@
   @media (prefers-reduced-motion: reduce) {
     * { animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
   }
+  .a8-msg-section-title { font-size:12px; font-weight:700; color:rgba(255,255,255,0.4); text-transform:uppercase; padding:14px 14px 6px; letter-spacing:0.5px; }
+  /* ---- Push notification banner (like real phone) ---- */
+  .a8-push-notif { position:fixed; top:12px; left:50%; transform:translateX(-50%) translateY(-120px); width:calc(100% - 24px); max-width:340px; background:rgba(30,30,35,0.95); backdrop-filter:blur(12px); border-radius:14px; padding:12px 14px; box-shadow:0 8px 32px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.06); z-index:9999; display:flex; align-items:center; gap:10px; transition:transform 0.45s cubic-bezier(0.22,1,0.36,1); pointer-events:none; }
+  .a8-push-notif.show { transform:translateX(-50%) translateY(0); pointer-events:auto; }
+  .a8-push-icon { width:32px; height:32px; border-radius:8px; background:linear-gradient(135deg,#4CAF50,#2E7D32); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .a8-push-body { flex:1; min-width:0; }
+  .a8-push-title { font-size:12.5px; font-weight:700; color:#fff; line-height:1.3; }
+  .a8-push-text { font-size:11.5px; color:rgba(255,255,255,0.55); line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .a8-push-time { font-size:10px; color:rgba(255,255,255,0.35); flex-shrink:0; }
 </style>
 </head>
 <body>
@@ -2381,10 +2390,6 @@
               </div>
             </div>
 
-            <div class="a8-profile-menu">
-              <div class="a8-menu-item"><span>Настройки объявлений</span><span class="chev">›</span></div>
-              <div class="a8-menu-item"><span>Служба поддержки</span><span class="chev">›</span></div>
-            </div>
           </div>
 
         </div>
@@ -5512,7 +5517,8 @@ const A8_PRODUCT_IMAGES = {
       a8State.pendingDeliveries = a8State.pendingDeliveries.filter(d => d.arrivesDay > a8State.day);
       arrived.forEach(d => {
         a8State.inventory.push(d.item);
-        a8Toast('Доставлено: ' + d.item.title + (d.trackCode ? ' (трек ' + d.trackCode + ')' : ''));
+        a8PlayMessageSound();
+        a8ShowNotification('Доставлено', d.item.title);
         a8ArchiveParcel(d, 'in');
       });
     }
@@ -5526,7 +5532,8 @@ const A8_PRODUCT_IMAGES = {
         a8State.bank.history = a8State.bank.history || [];
         a8State.bank.history.push({ title: 'Продано: ' + d.item.title, amt: d.amount });
         a8State.archive.push(Object.assign({}, d.item, { soldPrice: d.amount }));
-        a8Toast('Посылка доставлена, деньги зачислены: +' + a8Fmt(d.amount) + ' ₽ (' + d.item.title + ')');
+        a8PlayMessageSound();
+        a8ShowNotification('Деньги зачислены', '+' + a8Fmt(d.amount) + ' ₽ · ' + d.item.title);
         a8ArchiveParcel(d, 'out');
       });
       a8RenderMyListings();
@@ -5778,6 +5785,7 @@ const A8_PRODUCT_IMAGES = {
       a8PushMsg(chat, 'sys', 'Доставка оформлена. Оплачено: ' + a8Fmt(chat.dealPrice) + ' + доставка ' + a8Fmt(cost) + '. Трек-номер: ' + trackCode + '. Прибудет через ' + days + ' дн.');
       a8RemoveListing(l.id);
     } else {
+      chat.log = chat.log.filter(m => !(m.who === 'bot' && A8_BUYER_FOLLOWUPS.some(f => m.text === f)));
       const buyerCity = chat.buyerCity || l.city;
       a8State.outgoingDeliveries.push({
         arrivesDay: a8State.day + days, totalDays: days, trackCode: trackCode, tariffLabel: tariff.label,
@@ -5796,7 +5804,12 @@ const A8_PRODUCT_IMAGES = {
     a8RenderTransit();
     a8RenderParcels();
     a8OpenChat(l.id, ctx.mode); // возврат в чат Авито
-    a8PushMsg(chat, 'bot', 'Трек-номер: ' + trackCode); // авто-сообщение с треком
+    // Трек-номер отправляется от лица продавца (me) в sell-режиме, от бота в buy-режиме
+    if (ctx.mode === 'sell') {
+      a8PushMsg(chat, 'me', 'Трек-номер: ' + trackCode);
+    } else {
+      a8PushMsg(chat, 'bot', 'Трек-номер: ' + trackCode);
+    }
     a8RenderChat(chat, l);
   }
 
@@ -5844,6 +5857,7 @@ const A8_PRODUCT_IMAGES = {
     } else {
       // Продажа с доставкой: деньги замораживаются и зачислятся на баланс
       // только когда посылка доедет до покупателя (см. a8ProcessDeliveries).
+      chat.log = chat.log.filter(m => !(m.who === 'bot' && A8_BUYER_FOLLOWUPS.some(f => m.text === f)));
       const trackCode = a8GenerateTrackCode();
       const buyerCity = chat.buyerCity || l.city;
       a8State.outgoingDeliveries.push({
@@ -6546,6 +6560,7 @@ const A8_PRODUCT_IMAGES = {
   }
 
   function a8FinalizeSale(chat, l, sysNote) {
+    chat.log = chat.log.filter(m => !(m.who === 'bot' && A8_BUYER_FOLLOWUPS.some(f => m.text === f)));
     chat.completed = true;
     a8State.balance += chat.dealPrice;
     a8PlayDeal();
@@ -6589,6 +6604,7 @@ const A8_PRODUCT_IMAGES = {
     }
     if (action === 'sellnow') {
       if (!chat.dealPrice) return;
+      chat.log = chat.log.filter(m => !(m.who === 'bot' && A8_BUYER_FOLLOWUPS.some(f => m.text === f)));
       chat.awaitingFulfillment = true;
       a8PushMsg(chat, 'me', a8Pick(A8_SELLER_ACCEPT_PHRASES));
       a8PushMsgSellFulfillment(chat, l);
@@ -6658,6 +6674,13 @@ const A8_PRODUCT_IMAGES = {
     a8RenderChat(chat, l);
   }
   function a8HandleBuyOffer(chat, l, val) {
+    // Жёсткий потолок: игрок не может предложить больше чем 3x от цены товара
+    const maxOffer = Math.round(l.price * 3 / 10) * 10;
+    if (val > maxOffer) {
+      a8PushMsg(chat, 'me', 'Отдадите за ' + a8Fmt(val) + '?');
+      a8PushMsg(chat, 'bot', 'Вы серьёзно? За ' + a8Fmt(val) + '? Это в ' + (val / l.price).toFixed(1) + ' раза дороже, чем я просил. Нет, так не пойдёт.');
+      return;
+    }
     a8PushMsg(chat, 'me', 'Отдадите за ' + a8Fmt(val) + '?');
     chat.rounds++;
     if (l.botType === 'shark' && chat.rounds >= 3 && val < chat.floor * 0.95 && Math.random() < 0.5) {
@@ -6684,6 +6707,12 @@ const A8_PRODUCT_IMAGES = {
   }
   function a8HandleSellOffer(chat, l, val) {
     a8PushMsg(chat, 'me', 'Отдам за ' + a8Fmt(val) + '.');
+    // Жёсткий потолок: игрок не может запросить больше чем 3x от своей цены
+    const maxAsk = Math.round(l.price * 3 / 10) * 10;
+    if (val > maxAsk) {
+      a8PushMsg(chat, 'bot', 'Вы серьёзно? ' + a8Fmt(val) + '? Это в ' + (val / l.price).toFixed(1) + ' раза дороже, чем вы просили. Нет, так не пойдёт.');
+      return;
+    }
     const liq = l.liquidity || 1.0;
     if (val <= chat.current) {
       const accept = Math.random() < 0.85 * liq;
@@ -6705,23 +6734,38 @@ const A8_PRODUCT_IMAGES = {
 
   /* ---- Messages tab: shows active negotiation threads ---- */
   function a8RenderMessages() {
-    const threads = Object.values(a8State.chats).filter(c => c.log.length);
+    const allThreads = Object.values(a8State.chats).filter(c => c.log.length);
+    const buyThreads = allThreads.filter(c => c.mode === 'buy');
+    const sellThreads = allThreads.filter(c => c.mode === 'sell');
     const listEl = document.getElementById('a8-msg-list');
-    document.getElementById('a8-msg-empty').style.display = threads.length ? 'none' : 'flex';
-    listEl.innerHTML = threads.map(c => {
-      const l = a8FindListing(c.listingId);
-      if (!l) return '';
-      const last = c.log[c.log.length - 1];
-      const key = c.listingId + ':' + c.mode;
-      return '<div class="a8-swipe-row">' +
-        '<button class="a8-swipe-delete" onclick="a8DeleteChat(\'' + key + '\')">Удалить</button>' +
-        '<div class="a8-swipe-content a8-mylist-card" style="cursor:pointer;" onclick="a8OpenChat(\'' + l.id + '\',\'' + c.mode + '\')">' +
-          '<div class="a8-mylist-thumb">' + a8Visual(l.cat, 22, l.emoji, l.sourceFile) + '</div>' +
-          '<div class="a8-mylist-info"><div class="a8-mylist-title">' + l.title + '</div><div class="a8-cart-price" style="color:rgba(255,255,255,0.5);">' + (last ? last.text.slice(0, 40) : '') + '</div></div>' +
-        '</div>' +
-      '</div>';
-    }).join('');
+    document.getElementById('a8-msg-empty').style.display = allThreads.length ? 'none' : 'flex';
+
+    let html = '';
+    if (buyThreads.length) {
+      html += '<div class="a8-msg-section-title">🛒 Покупаю</div>';
+      html += buyThreads.map(c => a8MsgThreadHTML(c)).join('');
+    }
+    if (sellThreads.length) {
+      html += '<div class="a8-msg-section-title">💼 Продаю</div>';
+      html += sellThreads.map(c => a8MsgThreadHTML(c)).join('');
+    }
+    listEl.innerHTML = html;
     a8InitSwipeRows();
+  }
+
+  function a8MsgThreadHTML(c) {
+    const l = a8FindListing(c.listingId);
+    if (!l) return '';
+    const last = c.log[c.log.length - 1];
+    const key = c.listingId + ':' + c.mode;
+    const modeLabel = c.mode === 'buy' ? 'Покупка' : 'Продажа';
+    return '<div class="a8-swipe-row">' +
+      '<button class="a8-swipe-delete" onclick="a8DeleteChat(\'' + key + '\')">Удалить</button>' +
+      '<div class="a8-swipe-content a8-mylist-card" style="cursor:pointer;" onclick="a8OpenChat(\'' + l.id + '\',\'' + c.mode + '\')">' +
+        '<div class="a8-mylist-thumb">' + a8Visual(l.cat, 22, l.emoji, l.sourceFile) + '</div>' +
+        '<div class="a8-mylist-info"><div class="a8-mylist-title">' + l.title + '</div><div class="a8-cart-price" style="color:rgba(255,255,255,0.5);">' + (last ? last.text.slice(0, 40) : '') + '</div><div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:2px;">' + modeLabel + '</div></div>' +
+      '</div>' +
+    '</div>';
   }
 
   function a8DeleteChat(key) {
@@ -6933,7 +6977,7 @@ const A8_PRODUCT_IMAGES = {
     if (dual && a8State.createIsReplica) {
       ceiling = (it.replicaMax !== undefined) ? it.replicaMax : it.min + (it.max - it.min) * 0.45;
     }
-    return Math.round(ceiling * 1.2 / 10) * 10;
+    return Math.round(ceiling * 2.0 / 10) * 10;
   }
   /* Rough measure of how much a written description actually tells a buyer:
      longer, more specific, honest-sounding text sells better than a blank
@@ -6968,6 +7012,8 @@ const A8_PRODUCT_IMAGES = {
     const it = a8State.createSelectedItem;
     const cap = a8CreatePriceCap(it);
     if (price > cap) { a8Toast('Цена не может быть выше рыночного потолка: ' + a8Fmt(cap)); return; }
+    const minPrice = Math.max(10, Math.round(it.min * 0.1 / 10) * 10);
+    if (price < minPrice) { a8Toast('Цена слишком низкая, минимум: ' + a8Fmt(minPrice)); return; }
     const dual = it.isReplica !== null && it.isReplica !== undefined;
     const customDesc = document.getElementById('a8-create-desc').value.trim();
     const descBonus = a8DescQuality(customDesc);
@@ -6996,31 +7042,34 @@ const A8_PRODUCT_IMAGES = {
     a8Toast('Объявление опубликовано');
   }
 
-  /* ---- Profile: my active listings + offer simulation ---- */
+  /* ---- Profile: my active listings look like feed cards ---- */
   function a8RenderMyListings() {
     const activePanel = document.getElementById('a8-profile-active-panel');
     const archivePanel = document.getElementById('a8-profile-archive-panel');
     if (!a8State.myListings.length) {
       activePanel.innerHTML = '<div class="a8-empty-state" style="padding:36px 30px;"><span>У вас нет активных объявлений</span></div>';
     } else {
-      activePanel.innerHTML = a8State.myListings.map(l => {
-        const hasChat = !!a8State.chats[l.id + ':sell'];
-        return '<div class="a8-mylist-card">' +
-          '<div class="a8-mylist-thumb">' + a8Visual(l.cat, 22, l.emoji, l.sourceFile) + '</div>' +
-          '<div class="a8-mylist-info"><div class="a8-mylist-title">' + l.title + '</div><div class="a8-mylist-price">' + a8Fmt(l.price) + '</div></div>' +
-          (hasChat ? '<div class="a8-mylist-btn" onclick="a8OpenChat(\'' + l.id + '\',\'sell\')">Открыть чат</div>' : '') +
-        '</div>';
-      }).join('');
+      activePanel.innerHTML = '<div id="a8-profile-feed"></div>';
+      const feed = document.getElementById('a8-profile-feed');
+      feed.innerHTML = a8State.myListings.map(l => a8CardHTML(l)).join('');
+      feed.onclick = function(e) {
+        const heart = e.target.closest('[data-heart]');
+        if (heart) { e.stopPropagation(); a8ToggleHeart(heart.dataset.heart); a8RenderMyListings(); return; }
+        const card = e.target.closest('.a8-card');
+        if (card) a8OpenItem(card.dataset.id);
+      };
     }
     if (!a8State.archive.length) {
       archivePanel.innerHTML = '<div class="a8-empty-state" style="padding:36px 30px;"><span>Пока нет проданных объявлений</span></div>';
     } else {
-      archivePanel.innerHTML = a8State.archive.map(l =>
-        '<div class="a8-mylist-card">' +
-          '<div class="a8-mylist-thumb">' + a8Visual(l.cat, 22, l.emoji, l.sourceFile) + '</div>' +
-          '<div class="a8-mylist-info"><div class="a8-mylist-title">' + l.title + '</div><div class="a8-mylist-price">Продано за ' + a8Fmt(l.soldPrice) + '</div></div>' +
-        '</div>'
-      ).join('');
+      archivePanel.innerHTML = '<div id="a8-profile-archive-feed"></div>';
+      const feed = document.getElementById('a8-profile-archive-feed');
+      feed.innerHTML = a8State.archive.map(l => {
+        const soldTag = '<div style="position:absolute;top:8px;left:8px;background:rgba(76,175,80,0.9);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;z-index:2;">Продано</div>';
+        const clone = Object.assign({}, l);
+        const html = a8CardHTML(clone);
+        return html.replace('class="a8-card-img"', 'class="a8-card-img" style="position:relative;"') + soldTag.replace('class="a8-card-img"', '');
+      }).join('');
     }
   }
 
@@ -7114,7 +7163,10 @@ const A8_PRODUCT_IMAGES = {
     a8State.unread = (a8State.unread || 0) + 1;
     a8UpdateMsgBadge();
     a8RenderMessages();
-    if (!silent) a8Toast('Новое сообщение: ' + l.title);
+    if (!silent) {
+      a8PlayMessageSound();
+      a8ShowNotification('Новое сообщение', l.title);
+    }
     return true;
   }
 
@@ -7319,10 +7371,10 @@ const A8_PRODUCT_IMAGES = {
     document.getElementById('kb-root').innerHTML =
       '<div class="kb-onboard">' +
         '<div class="kb-onboard-title">Данные владельца карты</div>' +
-        '<div class="kb-onboard-sub">Например: Вася Пупкин</div>' +
+        '<div class="kb-onboard-sub">Например: Иван Иванов</div>' +
         '<div class="kb-form">' +
           '<div class="kb-label">Имя и фамилия</div>' +
-          '<input type="text" class="kb-input" id="kb-name-input" placeholder="Вася Пупкин" maxlength="30">' +
+          '<input type="text" class="kb-input" id="kb-name-input" placeholder="Иван Иванов" maxlength="30">' +
           '<div class="kb-label">Дата рождения</div>' +
           '<input type="text" class="kb-input" id="kb-birth-input" placeholder="ДД.ММ.ГГГГ" inputmode="numeric" maxlength="10">' +
           '<div class="kb-error" id="kb-form-error"></div>' +
@@ -7912,6 +7964,54 @@ const A8_PRODUCT_IMAGES = {
     document.getElementById('a8-profile-avatar').textContent = userName.charAt(0).toUpperCase();
   }
 
+  /* ---- Push notification + message sound ---- */
+  let a8NotifTimeout = null;
+  function a8ShowNotification(title, text) {
+    const notif = document.getElementById('a8-push-notif');
+    const titleEl = document.getElementById('a8-push-title');
+    const textEl = document.getElementById('a8-push-text');
+    const timeEl = document.getElementById('a8-push-time');
+    if (!notif) return;
+    clearTimeout(a8NotifTimeout);
+    titleEl.textContent = title || 'Новое сообщение';
+    textEl.textContent = text || '';
+    const now = new Date();
+    timeEl.textContent = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    notif.classList.add('show');
+    a8NotifTimeout = setTimeout(() => notif.classList.remove('show'), 3500);
+  }
+
+  function a8PlayMessageSound() {
+    if (!a8State.settings.sound) return;
+    // Короткий "динь" как на iPhone/Android при сообщении
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const now = ctx.currentTime;
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(880, now);
+      osc1.frequency.exponentialRampToValueAtTime(1760, now + 0.08);
+      gain1.gain.setValueAtTime(0.12, now);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.25);
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(660, now + 0.04);
+      osc2.frequency.exponentialRampToValueAtTime(1320, now + 0.12);
+      gain2.gain.setValueAtTime(0.08, now + 0.04);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(now + 0.04);
+      osc2.stop(now + 0.28);
+    } catch (e) {}
+  }
+
   /* ---- Autosave: periodic + on tab hide/close, so progress is never lost ---- */
   setInterval(a8SaveState, 5000);
   document.addEventListener('visibilitychange', () => { if (document.hidden) a8SaveState(); });
@@ -7919,5 +8019,13 @@ const A8_PRODUCT_IMAGES = {
   window.addEventListener('beforeunload', a8SaveState);
 </script>
 
+<div class="a8-push-notif" id="a8-push-notif">
+  <div class="a8-push-icon">💬</div>
+  <div class="a8-push-body">
+    <div class="a8-push-title" id="a8-push-title">Новое сообщение</div>
+    <div class="a8-push-text" id="a8-push-text">—</div>
+  </div>
+  <div class="a8-push-time" id="a8-push-time">сейчас</div>
+</div>
 </body>
 </html>
